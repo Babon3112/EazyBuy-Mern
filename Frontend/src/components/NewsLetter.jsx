@@ -45,7 +45,7 @@ const Button = styled.button`
   color: white;
 `;
 
-const NewLetter = () => {
+const NewsLetter = () => {
   return (
     <Container>
       <Title>NewsLetter</Title>
@@ -60,4 +60,4 @@ const NewLetter = () => {
   );
 };
 
-export default NewLetter;
+export default NewsLetter;
