@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { StyleSheetManager } from "styled-components"; // Import StyleSheetManager
 import { sliderItems } from "../data";
 import { mobile } from "../responsive";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
@@ -38,7 +38,7 @@ const Wrapper = styled.div`
   height: 100%;
   display: flex;
   transition: all 1.5s ease;
-  transform: translateX(${props=>props.slideIndex*-100}vw);
+  transform: translateX(${(props) => props.slideindex * -100}vw);
 `;
 
 const Slide = styled.div`
@@ -81,7 +81,7 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const Slider = () => {
+const Slider = (props) => {
   const [SliderIndex, setSliderIndex] = useState(0);
 
   const handleClicked = (direction) => {
@@ -93,28 +93,30 @@ const Slider = () => {
   };
 
   return (
-    <Container>
-      <Arrow direction="left" onClick={() => handleClicked("left")}>
-        <ArrowBackIosRoundedIcon />
-      </Arrow>
-      <Wrapper slideIndex = {SliderIndex}>
-        {sliderItems.map((sliderItem) => (
-          <Slide bg={sliderItem.bg} key={sliderItem.id}>
-            <ImageContainer>
-              <Image src={sliderItem.img} />
-            </ImageContainer>
-            <InfoContainer>
-              <Title>{sliderItem.title}</Title>
-              <Description>{sliderItem.description}</Description>
-              <Button>SHOP NOW</Button>
-            </InfoContainer>
-          </Slide>
-        ))}
-      </Wrapper>
-      <Arrow direction="right" onClick={() => handleClicked("right")}>
-        <ArrowForwardIosRoundedIcon />
-      </Arrow>
-    </Container>
+    <StyleSheetManager shouldForwardProp={(props) => props}>
+      <Container>
+        <Arrow direction="left" onClick={() => handleClicked("left")}>
+          <ArrowBackIosRoundedIcon />
+        </Arrow>
+        <Wrapper slideindex={SliderIndex}>
+          {sliderItems.map((sliderItem) => (
+            <Slide bg={sliderItem.bg} key={sliderItem.id}>
+              <ImageContainer>
+                <Image src={sliderItem.img} />
+              </ImageContainer>
+              <InfoContainer>
+                <Title>{sliderItem.title}</Title>
+                <Description>{sliderItem.description}</Description>
+                <Button>SHOP NOW</Button>
+              </InfoContainer>
+            </Slide>
+          ))}
+        </Wrapper>
+        <Arrow direction="right" onClick={() => handleClicked("right")}>
+          <ArrowForwardIosRoundedIcon />
+        </Arrow>
+      </Container>
+    </StyleSheetManager>
   );
 };
 
