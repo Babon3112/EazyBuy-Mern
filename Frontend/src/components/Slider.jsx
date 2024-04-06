@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { sliderItems } from "../data";
+import { mobile } from "../responsive";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 
@@ -10,6 +11,8 @@ const Container = styled.div`
   display: flex;
   position: relative;
   overflow: hidden;
+
+  ${mobile({ display: "none" })}
 `;
 
 const Arrow = styled.div`
