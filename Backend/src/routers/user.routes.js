@@ -1,4 +1,4 @@
-import e, { Router } from "express";
+import { Router } from "express";
 import {
   verifyToken,
   verifyTokenAndAdmin,
@@ -73,7 +73,6 @@ router.route("/all-profile").get(verifyTokenAndAdmin, async (req, res) => {
 });
 
 // get user stats
-
 router.route("/stats").get(verifyTokenAndAdmin, async (req, res) => {
   const date = new Date();
   const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
@@ -85,10 +84,13 @@ router.route("/stats").get(verifyTokenAndAdmin, async (req, res) => {
         $project: {
           month: { $month: "$createdAt" },
         },
-      },{$group:{
-        _id:"$month",
-        total:{$sum}
-      }}
+      },
+      {
+        $group: {
+          _id: "$month",
+          total: { $sum },
+        },
+      },
     ]);
     res.sendStatus(200).json(data);
   } catch (error) {

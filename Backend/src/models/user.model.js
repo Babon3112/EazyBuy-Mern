@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema(
   {
+    fullName: { type: String, required: true, trim: true },
     userName: {
       type: String,
       required: true,
@@ -16,7 +17,6 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    fullName: { type: String, required: true, trim: true },
     password: { type: String, required: [true, "Password is required"] },
     isAdmin: { type: Boolean, default: false },
   },
