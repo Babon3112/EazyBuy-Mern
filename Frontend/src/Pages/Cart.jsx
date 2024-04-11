@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import Announcements from "../components/Announcements";
@@ -6,6 +6,13 @@ import Footer from "../components/Footer";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { mobile } from "../responsive";
+import { useSelector } from "react-redux";
+import StripeCheckout from "react-stripe-checkout";
+import {userRequest} from "../requestMethod";
+import { useNavigate } from "react-router-dom";
+
+const KEY =
+  "pk_test_51P3k8ZSIRjlmm6mHtpL2tUlHHvAEhXk1Hy2Zzwcvdt474FJOwvvrYIy0vVzr428DBuWdK1Il84614mYJxoElfATZ00lMxNCHVe";
 
 const Container = styled.div``;
 
@@ -162,6 +169,27 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
+  const cart = useSelector((state) => state.cart);
+  const [stripeToken, setStripeToken] = useState(null);
+  const navigate = useNavigate();
+
+  const onToken = (token) => {
+    setStripeToken(token);
+  };
+
+  useEffect(() => {
+    const makeRequest = async () => {
+      try {
+        const response = await userRequest.post("/checkout/payment", {
+          tokenId: stripeToken.id,
+          amount: cart.total * 100,
+        });
+        navigate("/success", {data: response.data});
+      } catch {}
+    };
+    stripeToken && makeRequest();
+  }, [stripeToken, cart.total, navigate]);
+
   return (
     <Container>
       <Navbar />
@@ -178,63 +206,45 @@ const Cart = () => {
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetails>
-                <Image src="https://w7.pngwing.com/pngs/76/939/png-transparent-t-shirt-cambric-denim-jacket-sitting-boy-thumbnail.png" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b>ABC
-                  </ProductName>
-                  <ProductID>
-                    <b>ID:</b>123
-                  </ProductID>
-                  <ProductColor color="black" />
-                  <ProductSize>
-                    <b>Size:</b>L
-                  </ProductSize>
-                </Details>
-              </ProductDetails>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <RemoveIcon />
-                  <ProductAmount>1</ProductAmount>
-                  <AddIcon />
-                </ProductAmountContainer>
-                <ProductPrice>₹799</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {cart.products.map((product) => (
+              <Product>
+                <ProductDetails>
+                  <Image src={product.image} />
+                  <Details>
+                    <ProductName>
+                      <b>Product:</b>
+                      {product.title}
+                    </ProductName>
+                    <ProductID>
+                      <b>ID:</b>
+                      {product._id}
+                    </ProductID>
+                    <ProductColor color={product.color} />
+                    <ProductSize>
+                      <b>Size:</b>
+                      {product.size}
+                    </ProductSize>
+                  </Details>
+                </ProductDetails>
+                <PriceDetail>
+                  <ProductAmountContainer>
+                    <RemoveIcon />
+                    <ProductAmount>{product.quantity}</ProductAmount>
+                    <AddIcon />
+                  </ProductAmountContainer>
+                  <ProductPrice>
+                    ₹{product.price * product.quantity}
+                  </ProductPrice>
+                </PriceDetail>
+              </Product>
+            ))}
             <Hr />
-            <Product>
-              <ProductDetails>
-                <Image src="https://w7.pngwing.com/pngs/76/939/png-transparent-t-shirt-cambric-denim-jacket-sitting-boy-thumbnail.png" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b>ABC
-                  </ProductName>
-                  <ProductID>
-                    <b>ID:</b>123
-                  </ProductID>
-                  <ProductColor color="black" />
-                  <ProductSize>
-                    <b>Size:</b>L
-                  </ProductSize>
-                </Details>
-              </ProductDetails>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <RemoveIcon />
-                  <ProductAmount>1</ProductAmount>
-                  <AddIcon />
-                </ProductAmountContainer>
-                <ProductPrice>₹799</ProductPrice>
-              </PriceDetail>
-            </Product>
           </Info>
           <Summary>
             <SummaryTitle>Order Summary</SummaryTitle>
             <SummaryItem>
               <SummaryItemTexts>Subtotal:</SummaryItemTexts>
-              <SummaryItemPrice>₹1598</SummaryItemPrice>
+              <SummaryItemPrice>₹{cart.total}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemTexts>Shipping Charges:</SummaryItemTexts>
@@ -246,9 +256,20 @@ const Cart = () => {
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemTexts>Total</SummaryItemTexts>
-              <SummaryItemPrice>₹1598</SummaryItemPrice>
+              <SummaryItemPrice>₹{cart.total}</SummaryItemPrice>
             </SummaryItem>
-            <Button>CHECKOUT NOW</Button>
+            <StripeCheckout
+              name="EazyBuy"
+              image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsIz4qZKTOplGKCIt860B8HP3mTBMZGACNFg&usqp=CAU"
+              billingAddress
+              shippingAddress
+              description={`Your total is ${cart.total}`}
+              amount={cart.total * 100}
+              token={onToken}
+              stripeKey={KEY}
+            >
+              <Button>CHECKOUT Now</Button>
+            </StripeCheckout>
           </Summary>
         </Bottom>
       </Wrapper>
