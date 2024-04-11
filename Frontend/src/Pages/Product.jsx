@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import Announcements from "../components/Announcements";
@@ -7,6 +7,10 @@ import Footer from "../components/Footer";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { mobile } from "../responsive";
+import { useLocation } from "react-router-dom";
+import { publicRequest } from "../requestMethod";
+import { addToCart } from "../redux/cartRedux";
+import { useDispatch } from "react-redux";
 
 const Container = styled.div``;
 
@@ -127,48 +131,72 @@ const Button = styled.button`
 `;
 
 const Product = () => {
+  const location = useLocation();
+  const id = location.pathname.split("/")[2];
+
+  const [product, setProduct] = useState({});
+  const [quantity, setQuantity] = useState(1);
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await publicRequest.get("products/product/" + id);
+        setProduct(res.data);
+      } catch (error) {}
+    };
+    getProduct();
+  }, [id]);
+
+  const handleQuantity = (type) => {
+    if (type === "decrease") {
+      quantity > 1 && setQuantity(quantity - 1);
+    } else {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  const handleClick = () => {
+    dispatch(addToCart({ ...product, quantity, color, size }));
+  };
+
   return (
     <Container>
       <Navbar />
       <Announcements />
       <Wrapper>
         <ImageContainer>
-          <Image src="https://w7.pngwing.com/pngs/76/939/png-transparent-t-shirt-cambric-denim-jacket-sitting-boy-thumbnail.png" />
+          <Image src={product.image} />
         </ImageContainer>
         <InfoContainer>
-          <Title>Denim Shirt</Title>
-          <Description>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex, dolorum
-            ad. Et ex deserunt ipsa quod eius sed, corporis eaque pariatur quia
-            doloremque explicabo consectetur nisi magni perferendis expedita nam
-          </Description>
-          <Price>₹799</Price>
+          <Title>{product.title}</Title>
+          <Description>{product.description}</Description>
+          <Price>₹{product.price}</Price>
           <FilterContainer>
             <Filter>
               <FilterTitle>Color:</FilterTitle>
-              <FilterColor color="black" />
-              <FilterColor color="darkblue" />
-              <FilterColor color="skyblue" />
-              <FilterColor color="gray" />
+              {product.color?.map((c) => (
+                <FilterColor color={c} key={c} onClick={() => setColor(c)} />
+              ))}
             </Filter>
             <Filter>
               <FilterTitle>Size: </FilterTitle>
-              <FilterSize>
-                <FilterSizeOption>XS</FilterSizeOption>
-                <FilterSizeOption>S</FilterSizeOption>
-                <FilterSizeOption>M</FilterSizeOption>
-                <FilterSizeOption>L</FilterSizeOption>
-                <FilterSizeOption>XL</FilterSizeOption>
+              <FilterSize onChange={(e) => setSize(e.target.value)}>
+                {product.size?.map((s) => (
+                  <FilterSizeOption key={s}>{s}</FilterSizeOption>
+                ))}
               </FilterSize>
             </Filter>
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
-              <RemoveIcon />
-              <Amount>1</Amount>
-              <AddIcon />
+              <RemoveIcon onClick={() => handleQuantity("decrease")} />
+              <Amount>{quantity}</Amount>
+              <AddIcon onClick={() => handleQuantity("increase")} />
             </AmountContainer>
-            <Button>ADD TO CART</Button>
+            <Button onClick={handleClick}>ADD TO CART</Button>
           </AddContainer>
         </InfoContainer>
       </Wrapper>
