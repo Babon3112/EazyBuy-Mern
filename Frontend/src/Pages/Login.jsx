@@ -81,7 +81,7 @@ const Error = styled.span`
   text-align: center;
 `;
 
-const Register = () => {
+const signIn = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const { isFetching, error } = useSelector((state) => state.user);
@@ -120,4 +120,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default signIn;
