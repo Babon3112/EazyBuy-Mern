@@ -62,7 +62,7 @@ router.route("/product/:id").get(async (req, res) => {
 });
 
 // get all products
-router.route("/products-list").get(async (req, res) => {
+router.route("/").get(async (req, res) => {
   const queryNew = req.query.new;
   const queryCategories = req.query.category;
 

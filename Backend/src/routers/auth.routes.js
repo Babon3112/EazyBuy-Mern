@@ -26,9 +26,9 @@ router.route("/register").post( async (req, res) => {
 });
 
 router.route("/login").post(async (req, res) => {
-  const { email, password } = req.body;
+  const { userName, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ userName });
     if (!user) res.status(401).json("user not found");
 
     const savedPassword = Cryptojs.AES.decrypt(
