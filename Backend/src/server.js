@@ -25,6 +25,7 @@ app.use("/eazybuy/v1/auth", authRouter);
 app.use("/eazybuy/v1/users", userRouter);
 app.use("/eazybuy/v1/products", productRouter);
 app.use("/eazybuy/v1/shopping-cart", cartRouter);
+app.use("/eazybuy/v1/orders", orderRouter);
 app.use("/eazybuy/v1/checkout", paymentRouter);
 
 app.listen(process.env.PORT || 6969, () => {

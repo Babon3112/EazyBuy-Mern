@@ -59,7 +59,7 @@ router.route("/your-profile/:id").get(verifyTokenAndAdmin, async (req, res) => {
 });
 
 // get all user profile
-router.route("/all-profile").get(verifyTokenAndAdmin, async (req, res) => {
+router.route("/").get(verifyTokenAndAdmin, async (req, res) => {
   const query = req.query.new;
 
   try {
@@ -88,11 +88,11 @@ router.route("/stats").get(verifyTokenAndAdmin, async (req, res) => {
       {
         $group: {
           _id: "$month",
-          total: { $sum },
+          total: { $sum: 1 },
         },
       },
     ]);
-    res.sendStatus(200).json(data);
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json(error);
   }

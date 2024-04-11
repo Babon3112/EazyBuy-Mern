@@ -52,7 +52,7 @@ router
   });
 
 // get product
-router.route("/product/:id").get(async (req, res) => {
+router.route("/:id").get(async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     res.status(200).json(product);
