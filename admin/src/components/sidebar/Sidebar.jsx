@@ -12,6 +12,7 @@ import DynamicFeedIcon from "@mui/icons-material/DynamicFeed";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ReportIcon from "@mui/icons-material/Report";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
@@ -48,6 +49,12 @@ const Sidebar = () => {
                 <li className="sidebarListItem">
                   <PermIdentityIcon className="sidebarIcon" />
                   Users
+                </li>
+              </Link>
+              <Link to="/newproduct" className="link">
+                <li className="sidebarListItem">
+                  <AddBusinessOutlinedIcon className="addBusinessOutlinedIcon" />
+                  Add Products
                 </li>
               </Link>
               <Link to="/products" className="link">
