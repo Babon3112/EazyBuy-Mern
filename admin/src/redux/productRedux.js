@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const productSlice = createSlice({
   name: "product",
   initialState: {
-    products: null,
+    products: [],
     isFetching: false,
     error: false,
   },
@@ -17,7 +17,7 @@ const productSlice = createSlice({
       state.isFetching = false;
       state.products = action.payload;
     },
-    getAllProductsFaliure: (state) => {
+    getAllProductsFailure: (state) => {
       state.isFetching = false;
       state.error = true;
     },
@@ -28,38 +28,40 @@ const productSlice = createSlice({
     },
     deleteOneProductSuccess: (state, action) => {
       state.isFetching = false;
-      state.products.splice(
-        state.products.findIndex((item) => item._id === action.payload),
-        1
+      state.products = state.products.filter(
+        (product) => product._id !== action.payload
       );
     },
-    deleteOneProductFaliure: (state) => {
+    deleteOneProductFailure: (state) => {
       state.isFetching = false;
       state.error = true;
     },
-    // UPADATE
+    // UPDATE
     updateProductStart: (state) => {
       state.isFetching = true;
       state.error = false;
     },
-    updateProductSuccess: (state) => {
+    updateProductSuccess: (state, action) => {
       state.isFetching = false;
-      state.products[
-        state.products.findIndex((item) => item._id === action.payload.id)
-      ] = action.payload.product;
+      const index = state.products.findIndex(
+        (product) => product._id === action.payload.id
+      );
+      if (index !== -1) {
+        state.products[index] = action.payload.product;
+      }
     },
     updateProductFailure: (state) => {
       state.isFetching = false;
       state.error = true;
     },
-    // CREAtE
+    // CREATE
     createProductStart: (state) => {
       state.isFetching = true;
       state.error = false;
     },
-    createProductSuccess: (state) => {
+    createProductSuccess: (state, action) => {
       state.isFetching = false;
-      state.products = action.payload;
+      state.products.push(action.payload);
     },
     createProductFailure: (state) => {
       state.isFetching = false;
@@ -71,10 +73,10 @@ const productSlice = createSlice({
 export const {
   getAllProductsStart,
   getAllProductsSuccess,
-  getAllProductsFaliure,
+  getAllProductsFailure,
   deleteOneProductStart,
   deleteOneProductSuccess,
-  deleteOneProductFaliure,
+  deleteOneProductFailure,
   updateProductStart,
   updateProductSuccess,
   updateProductFailure,

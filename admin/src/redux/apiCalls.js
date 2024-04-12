@@ -3,10 +3,10 @@ import {
   createProductFailure,
   createProductStart,
   createProductSuccess,
-  deleteOneProductFaliure,
+  deleteOneProductFailure,
   deleteOneProductStart,
   deleteOneProductSuccess,
-  getAllProductsFaliure,
+  getAllProductsFailure,
   getAllProductsStart,
   getAllProductsSuccess,
   updateProductFailure,
@@ -31,7 +31,7 @@ export const getAllProducts = async (dispatch) => {
     const res = await publicRequest.get("/products");
     dispatch(getAllProductsSuccess(res.data));
   } catch (error) {
-    dispatch(getAllProductsFaliure());
+    dispatch(getAllProductsFailure());
   }
 };
 
@@ -41,7 +41,7 @@ export const deleteOneProduct = async (id, dispatch) => {
     const res = await userRequest.delete(`/products/delete-product/${id}`);
     dispatch(deleteOneProductSuccess(id));
   } catch (error) {
-    dispatch(deleteOneProductFaliure());
+    dispatch(deleteOneProductFailure());
   }
 };
 
