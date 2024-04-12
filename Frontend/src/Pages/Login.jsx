@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/apiCalls";
-import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   width: 100vw;
@@ -21,7 +21,7 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  width: 25%;
+  width: 300px;
   padding: 20px;
   background-color: #fff;
 
@@ -67,7 +67,7 @@ const Button = styled.button`
   }
 `;
 
-const Link = styled.a`
+const Span = styled.span`
   margin: 5px 0;
   font-size: 12px;
   font-weight: 500;
@@ -82,14 +82,20 @@ const Error = styled.span`
 `;
 
 const signIn = () => {
-  const [userName, setUserName] = useState("");
+  const [identifier, setIdentifier] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
   const [password, setPassword] = useState("");
   const { isFetching, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    login(dispatch, { userName, password });
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+    if (isEmail) {
+      login(dispatch, { email: identifier, password });
+    } else {
+      login(dispatch, { mobileNo: identifier, password });
+    }
   };
 
   return (
@@ -98,8 +104,8 @@ const signIn = () => {
         <Title>SIGN IN</Title>
         <Form>
           <Input
-            placeholder="Username"
-            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Email or MobileNo"
+            onChange={(e) => setIdentifier(e.target.value)}
           />
           <Input
             placeholder="Password"
@@ -112,8 +118,12 @@ const signIn = () => {
               Log IN
             </Button>
           </ButtonMiddle>
-          <Link>FORGOT PASSWORD?</Link>
-          <Link>CREATE A NEW ACCOUNT</Link>
+          <Link>
+            <Span>FORGOT PASSWORD?</Span>
+          </Link>
+          <Link to="/register">
+            <Span>CREATE A NEW ACCOUNT</Span>
+          </Link>
         </Form>
       </Wrapper>
     </Container>

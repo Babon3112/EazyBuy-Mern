@@ -4,8 +4,10 @@ import { Badge } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartTwoToneIcon from "@mui/icons-material/ShoppingCartTwoTone";
 import { mobile } from "../responsive";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { logout } from "../redux/apiCalls";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const Container = styled.div`
   height: 60px;
@@ -71,15 +73,25 @@ const Right = styled.div`
 `;
 
 const MenuItem = styled.div`
+  display: flex;
   font-size: 14px;
   cursor: pointer;
   margin-left: 25px;
+  font-weight: 500;
+  align-items: center;
 
   ${mobile({ fontSize: "10px", marginLeft: "12px", fontWeight: 600 })}
 `;
 
 const Navbar = () => {
   const quantity = useSelector((state) => state.cart.quantity);
+  const user = useSelector((state) => state.user.currentUser);
+
+  const dispatch = useDispatch();
+
+  const handleLogin = (e) => {
+    logout(dispatch);
+  };
 
   return (
     <Container>
@@ -95,9 +107,24 @@ const Navbar = () => {
           <Logo>EazyBuy.</Logo>
         </Center>
         <Right>
-          <MenuItem>REGISTER</MenuItem>
-          <MenuItem>SIGN IN</MenuItem>
-          <Link to="/cart">
+          {user === null ? (
+            <>
+              <Link to="/register" style={{ textDecoration: 'none', color:"black" }}>
+                <MenuItem>REGISTER</MenuItem>
+              </Link>
+              <Link to="/login" style={{ textDecoration: 'none', color:"black" }}>
+                <MenuItem>SIGN IN
+                </MenuItem>
+              </Link>
+            </>
+          ) : (
+            <Link to="/" style={{ textDecoration: 'none', color:"black" }}>
+              <MenuItem onClick={handleLogin}>Log Out
+              <LogoutIcon fontSize=""/>
+              </MenuItem>
+            </Link>
+          )}
+          <Link to="/cart" style={{ textDecoration: 'none', color:"black" }}>
             <MenuItem>
               <Badge badgeContent={quantity} color="primary">
                 <ShoppingCartTwoToneIcon />
