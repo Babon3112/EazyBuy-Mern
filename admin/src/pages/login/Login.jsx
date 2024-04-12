@@ -53,13 +53,13 @@ const Button = styled.button`
 `;
 
 const Register = () => {
-  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    login(dispatch, { userName, password });
+    login(dispatch, { email, password });
   };
 
   return (
@@ -68,8 +68,8 @@ const Register = () => {
         <Title>SIGN IN</Title>
         <Form>
           <Input
-            placeholder="Username"
-            onChange={(e) => setUserName(e.target.value)}
+            placeholder="email"
+            onChange={(e) => setEmail(e.target.value)}
           />
           <Input
             placeholder="Password"
