@@ -45,7 +45,7 @@ export default function ProductList() {
       width: 150,
       renderCell: (params) => {
         return (
-          <>
+          <div className="middle">
             <Link to={"/product/" + params.row._id}>
               <button className="productListEdit">Edit</button>
             </Link>
@@ -53,7 +53,7 @@ export default function ProductList() {
               className="productListDelete"
               onClick={() => handleDelete(params.row._id)}
             />
-          </>
+          </div>
         );
       },
     },
