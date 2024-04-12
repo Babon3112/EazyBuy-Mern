@@ -7,12 +7,13 @@ const router = Router();
 
 //Register
 
-router.route("/register").post( async (req, res) => {
-  const { fullName, email, userName, password } = req.body;
+router.route("/register").post(async (req, res) => {
+  const { fullName, userName, mobileNo, email, password } = req.body;
   try {
     const user = await User.create({
       userName: userName.toLowerCase(),
       fullName,
+      mobileNo,
       email,
       password: Cryptojs.AES.encrypt(
         password,
@@ -26,9 +27,14 @@ router.route("/register").post( async (req, res) => {
 });
 
 router.route("/login").post(async (req, res) => {
-  const { userName, password } = req.body;
+  const { email, mobileNo, password } = req.body;
   try {
-    const user = await User.findOne({ userName });
+    let user;
+    if (email) {
+      user = await User.findOne({ email });
+    } else if (mobileNo) {
+      user = await User.findOne({ mobileNo });
+    }
     if (!user) res.status(401).json("user not found");
 
     const savedPassword = Cryptojs.AES.decrypt(
