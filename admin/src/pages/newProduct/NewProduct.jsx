@@ -8,12 +8,14 @@ import {
 } from "firebase/storage";
 import app from "../../fireBase";
 import { createProduct } from "../../redux/apiCalls";
-import { useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 
 export default function NewProduct() {
   const [inputs, setInputs] = useState({});
   const [image, setImage] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [color, setColor] = useState([]);
+  const [size, setSize] = useState([]);
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -26,12 +28,24 @@ export default function NewProduct() {
     setCategories(e.target.value.split(","));
   };
 
+  const handleColor = (e) => {
+    setColor(e.target.value.split(","));
+  };
+
+  const handleSize = (e) => {
+    setSize(e.target.value.split(","));
+  };
+
   const handleClick = (e) => {
     e.preventDefault();
-    const fileName = new Date().getTime() + file.name;
+    if (!image) {
+      console.error("Please select an image");
+      return;
+    }
+    const fileName = new Date().getTime() + image.name;
     const storage = getStorage(app);
     const storageRef = ref(storage, `productImages/${fileName}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const uploadTask = uploadBytesResumable(storageRef, image);
 
     uploadTask.on(
       "state_changed",
@@ -49,11 +63,19 @@ export default function NewProduct() {
           default:
         }
       },
-      (error) => {},
+      (error) => {
+        console.error("Error uploading image:", error);
+      },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          const product = { ...inputs, image: downloadURL, categories: categories };
-          createProduct(product,dispatch)
+          const product = {
+            ...inputs,
+            image: downloadURL,
+            categories: categories,
+            color: color,
+            size: size,
+          };
+          createProduct(product, dispatch);
         });
       }
     );
@@ -81,11 +103,11 @@ export default function NewProduct() {
           />
         </div>
         <div className="addProductItem">
-          <label>Deescription</label>
+          <label>Description</label>
           <input
             name="description"
             type="text"
-            placeholder="Desciption..."
+            placeholder="description..."
             onChange={handleChange}
           />
         </div>
@@ -101,9 +123,25 @@ export default function NewProduct() {
         <div className="addProductItem">
           <label>Categories</label>
           <input
-            type="Array"
-            placeholder="enter your categories"
+            type="text"
+            placeholder="enter product categories"
             onChange={handleCategories}
+          />
+        </div>
+        <div className="addProductItem">
+          <label>Color</label>
+          <input
+            type="text"
+            placeholder="enter product colors"
+            onChange={handleColor}
+          />
+        </div>
+        <div className="addProductItem">
+          <label>Size</label>
+          <input
+            type="text"
+            placeholder="enter product sizes"
+            onChange={handleSize}
           />
         </div>
         <div className="addProductItem">
