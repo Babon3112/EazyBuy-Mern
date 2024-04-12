@@ -34,7 +34,6 @@ export default function ProductList() {
       },
     },
     { field: "inStock", headerName: "Stock", width: 200 },
-
     {
       field: "price",
       headerName: "Price",
