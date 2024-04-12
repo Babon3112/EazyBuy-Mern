@@ -1,6 +1,6 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import userReducer from "./userRedux";
-import productReducer from "./productReedux";
+import productReducer from "./productRedux";
 import {
   persistStore,
   persistReducer,
