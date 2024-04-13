@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { mobile } from "../responsive";
 import { register } from "../redux/apiCalls";
 import { useDispatch, useSelector } from "react-redux";
-
+import { Navigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 100vw;
@@ -86,11 +86,37 @@ const Register = () => {
   const [mobileNo, setMobileNo] = useState(0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { loading, error } = useSelector((state) => state.user);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { loading, error, user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  const handleregister = (e) => {
+  const isValidMobile = (mobile) => {
+    const re = /^[0-9]{10}$/;
+    return re.test(mobile);
+  };
+
+  const isValidEmail = (email) => {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  };
+
+  const handleRegister = (e) => {
     e.preventDefault();
+
+    if (!isValidMobile(mobileNo)) {
+      alert("Please enter a valid mobile number");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Password and confirm password do not match");
+      return;
+    }
 
     register(dispatch, {
       fullName,
@@ -101,6 +127,10 @@ const Register = () => {
       avatar,
     });
   };
+
+  if (Register) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <Container>
@@ -133,18 +163,22 @@ const Register = () => {
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
           />
-          <Input type="password" placeholder="Password" />
+          <Input
+            type="password"
+            placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <Input
             type="password"
             placeholder="Confirm Password"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <Agreement>
             By creating an account, I consent to the processing of your personal
             data in accordance with the <b>PRIVACY POLICY</b>
           </Agreement>
           <ButtonMiddle>
-            <Button onClick={handleregister} disabled={loading}>
+            <Button onClick={handleRegister} disabled={loading}>
               Create an Account
             </Button>
           </ButtonMiddle>

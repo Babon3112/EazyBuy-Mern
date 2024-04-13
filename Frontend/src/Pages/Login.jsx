@@ -83,7 +83,6 @@ const Error = styled.span`
 
 const signIn = () => {
   const [identifier, setIdentifier] = useState("");
-  const [mobileNo, setMobileNo] = useState("");
   const [password, setPassword] = useState("");
   const { isFetching, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
