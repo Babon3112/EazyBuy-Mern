@@ -3,24 +3,42 @@ export const sliderItems = [
     id: 1,
     img: "",
     title: "SUMMER SALE",
-    desc: "DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF FOR NEW ARRIVALS.",
-    bg: "f5fafd",
+    desc: "DISCOVER THE LATEST TRENDS! ENJOY A FLAT 30% DISCOUNT ON NEW ARRIVALS.",
+    bg: "#F5F5DC", // Beige
   },
   {
     id: 2,
-    img: "https://i.ibb.co/DG69bQ4/2.png",
-    title: "AUTUMN COLLECTION",
-    desc: "DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF FOR NEW ARRIVALS.",
-    bg: "fcf1ed",
+    img: "",
+    title: "MONSON SALE",
+    desc: "REFRESH YOUR WARDROBE! GRAB A FLAT 30% DISCOUNT ON NEW ARRIVALS.",
+    bg: "#F0FFFF", // Azure
   },
   {
     id: 3,
-    img: "https://i.ibb.co/cXFnLLV/3.png",
-    title: "LOUNGEWEAR LOVE",
-    desc: "DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF FOR NEW ARRIVALS.",
-    bg: "fbf0f4",
+    img: "https://i.ibb.co/DG69bQ4/2.png",
+    title: "AUTUMN COLLECTION",
+    desc: "EXPLORE COZY STYLES! ENJOY A FLAT 30% DISCOUNT ON NEW ARRIVALS.",
+    bg: "#FFF5EE", // Seashell
+  },
+  {
+    id: 4,
+    img: "",
+    title: "WINTER COLLECTION",
+    desc: "STAY WARM AND STYLISH! AVAIL A FLAT 30% DISCOUNT ON NEW ARRIVALS.",
+    bg: "#FFDAB9", // Peachpuff
+  },
+  {
+    id: 5,
+    img: "",
+    title: "FESTIVE SALE",
+    desc: "CELEBRATE IN STYLE! GRAB A FLAT 30% DISCOUNT ON NEW ARRIVALS.",
+    bg: "#FFE4E1", // Misty Rose
   },
 ];
+
+
+
+
 
 export const categories = [
   {

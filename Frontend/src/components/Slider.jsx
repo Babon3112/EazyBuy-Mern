@@ -106,7 +106,7 @@ const Slider = (props) => {
               </ImageContainer>
               <InfoContainer>
                 <Title>{sliderItem.title}</Title>
-                <Description>{sliderItem.description}</Description>
+                <Description>{sliderItem.desc}</Description>
                 <Button>SHOP NOW</Button>
               </InfoContainer>
             </Slide>

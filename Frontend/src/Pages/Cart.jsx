@@ -8,23 +8,29 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { mobile } from "../responsive";
 import { useSelector } from "react-redux";
 import StripeCheckout from "react-stripe-checkout";
-import {userRequest} from "../requestMethod";
+import { userRequest } from "../requestMethod";
 import { useNavigate } from "react-router-dom";
 
 const KEY =
   "pk_test_51P3k8ZSIRjlmm6mHtpL2tUlHHvAEhXk1Hy2Zzwcvdt474FJOwvvrYIy0vVzr428DBuWdK1Il84614mYJxoElfATZ00lMxNCHVe";
 
-const Container = styled.div``;
+const Container = styled.div`
+  background-color: #f8f8f8;
+`;
 
 const Wrapper = styled.div`
   padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 
   ${mobile({ padding: "10px" })}
 `;
 
 const Title = styled.h1`
-  font-weight: 400;
+  font-weight: 500;
   text-align: center;
+  color: #333;
 `;
 
 const Top = styled.div`
@@ -79,6 +85,8 @@ const ProductDetails = styled.div`
 
 const Image = styled.img`
   width: 200px;
+  height: 200px;
+  object-fit: contain;
 `;
 
 const Details = styled.div`
@@ -184,11 +192,15 @@ const Cart = () => {
           tokenId: stripeToken.id,
           amount: cart.total * 100,
         });
-        navigate("/success", {data: response.data});
+        navigate("/success", { stripeData: response.data, products: cart });
       } catch {}
     };
     stripeToken && makeRequest();
   }, [stripeToken, cart.total, navigate]);
+
+  const gotoHome = () => {
+    navigate("/");
+  };
 
   return (
     <Container>
@@ -197,7 +209,7 @@ const Cart = () => {
       <Wrapper>
         <Title>Your Bag</Title>
         <Top>
-          <TopButton>Continue Shopping</TopButton>
+          <TopButton onClick={gotoHome}>Continue Shopping</TopButton>
           <TopTexts>
             <TopText>Shooping Bag(2)</TopText>
             <TopText>Your Wishlist(0)</TopText>
@@ -207,38 +219,40 @@ const Cart = () => {
         <Bottom>
           <Info>
             {cart.products.map((product) => (
-              <Product>
-                <ProductDetails>
-                  <Image src={product.image} />
-                  <Details>
-                    <ProductName>
-                      <b>Product:</b>
-                      {product.title}
-                    </ProductName>
-                    <ProductID>
-                      <b>ID:</b>
-                      {product._id}
-                    </ProductID>
-                    <ProductColor color={product.color} />
-                    <ProductSize>
-                      <b>Size:</b>
-                      {product.size}
-                    </ProductSize>
-                  </Details>
-                </ProductDetails>
-                <PriceDetail>
-                  <ProductAmountContainer>
-                    <RemoveIcon />
-                    <ProductAmount>{product.quantity}</ProductAmount>
-                    <AddIcon />
-                  </ProductAmountContainer>
-                  <ProductPrice>
-                    ₹{product.price * product.quantity}
-                  </ProductPrice>
-                </PriceDetail>
-              </Product>
+              <>
+                <Product key={product._id}>
+                  <ProductDetails>
+                    <Image src={product.image} />
+                    <Details>
+                      <ProductName>
+                        <b>Product:</b>
+                        {product.title}
+                      </ProductName>
+                      <ProductID>
+                        <b>ID:</b>
+                        {product._id}
+                      </ProductID>
+                      <ProductColor color={product.color} />
+                      <ProductSize>
+                        <b>Size:</b>
+                        {product.size}
+                      </ProductSize>
+                    </Details>
+                  </ProductDetails>
+                  <PriceDetail>
+                    <ProductAmountContainer>
+                      <RemoveIcon />
+                      <ProductAmount>{product.quantity}</ProductAmount>
+                      <AddIcon />
+                    </ProductAmountContainer>
+                    <ProductPrice>
+                      ₹{product.price * product.quantity}
+                    </ProductPrice>
+                  </PriceDetail>
+                </Product>
+                <Hr />
+              </>
             ))}
-            <Hr />
           </Info>
           <Summary>
             <SummaryTitle>Order Summary</SummaryTitle>
@@ -260,10 +274,10 @@ const Cart = () => {
             </SummaryItem>
             <StripeCheckout
               name="EazyBuy"
-              image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsIz4qZKTOplGKCIt860B8HP3mTBMZGACNFg&usqp=CAU"
+              image=""
               billingAddress
               shippingAddress
-              description={`Your total is ${cart.total}`}
+              description={`Your total is ₹${cart.total}`}
               amount={cart.total * 100}
               token={onToken}
               stripeKey={KEY}

@@ -4,6 +4,7 @@ import { mobile } from "../responsive";
 import { register } from "../redux/apiCalls";
 import { useDispatch, useSelector } from "react-redux";
 
+
 const Container = styled.div`
   width: 100vw;
   height: 100vh;
@@ -34,6 +35,18 @@ const Title = styled.h1`
 const Form = styled.form`
   display: flex;
   flex-wrap: wrap;
+`;
+
+const Div = styled.div`
+  width: 100%;
+  padding: 10px 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Span = styled.span`
+  padding-right: 20px;
 `;
 
 const Input = styled.input`
@@ -67,6 +80,7 @@ const Button = styled.button`
 `;
 
 const Register = () => {
+  const [avatar, setAvatar] = useState(null);
   const [fullName, setFullName] = useState("");
   const [userName, setUserName] = useState("");
   const [mobileNo, setMobileNo] = useState(0);
@@ -77,7 +91,15 @@ const Register = () => {
 
   const handleregister = (e) => {
     e.preventDefault();
-    register(dispatch, { fullName, userName, mobileNo, email, password });
+
+    register(dispatch, {
+      fullName,
+      userName,
+      mobileNo,
+      email,
+      password,
+      avatar,
+    });
   };
 
   return (
@@ -85,6 +107,12 @@ const Register = () => {
       <Wrapper>
         <Title>CREATE AN ACCOUNT</Title>
         <Form>
+          <Div className="addProductItem">
+            <Span>
+              <h4>Avatar</h4>
+            </Span>
+            <input type="file" onChange={(e) => setAvatar(e.target.files[0])} />
+          </Div>
           <Input
             type="text"
             placeholder="Full name"
@@ -96,7 +124,7 @@ const Register = () => {
             onChange={(e) => setUserName(e.target.value)}
           />
           <Input
-            type="text"
+            type="number"
             placeholder="Mobile no."
             onChange={(e) => setMobileNo(e.target.value)}
           />

@@ -83,6 +83,12 @@ const MenuItem = styled.div`
   ${mobile({ fontSize: "10px", marginLeft: "12px", fontWeight: 600 })}
 `;
 
+const Image = styled.img`
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+`;
+
 const Navbar = () => {
   const quantity = useSelector((state) => state.cart.quantity);
   const user = useSelector((state) => state.user.currentUser);
@@ -107,30 +113,46 @@ const Navbar = () => {
           <Logo>EazyBuy.</Logo>
         </Center>
         <Right>
-          {user === null ? (
-            <>
-              <Link to="/register" style={{ textDecoration: 'none', color:"black" }}>
-                <MenuItem>REGISTER</MenuItem>
-              </Link>
-              <Link to="/login" style={{ textDecoration: 'none', color:"black" }}>
-                <MenuItem>SIGN IN
-                </MenuItem>
-              </Link>
-            </>
-          ) : (
-            <Link to="/" style={{ textDecoration: 'none', color:"black" }}>
-              <MenuItem onClick={handleLogin}>Log Out
-              <LogoutIcon fontSize=""/>
-              </MenuItem>
-            </Link>
-          )}
-          <Link to="/cart" style={{ textDecoration: 'none', color:"black" }}>
+          <Link to="/cart" style={{ textDecoration: "none", color: "black" }}>
             <MenuItem>
               <Badge badgeContent={quantity} color="primary">
                 <ShoppingCartTwoToneIcon />
               </Badge>
             </MenuItem>
           </Link>
+          {user === null ? (
+            <>
+              <Link
+                to="/register"
+                style={{ textDecoration: "none", color: "black" }}
+              >
+                <MenuItem>REGISTER</MenuItem>
+              </Link>
+              <Link
+                to="/login"
+                style={{ textDecoration: "none", color: "black" }}
+              >
+                <MenuItem>SIGN IN</MenuItem>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/cart"
+                style={{ textDecoration: "none", color: "black" }}
+              >
+                <MenuItem>
+                  <Image src={user.img} />
+                </MenuItem>
+              </Link>
+              <Link to="/" style={{ textDecoration: "none", color: "black" }}>
+                <MenuItem onClick={handleLogin}>
+                  Log Out
+                  <LogoutIcon fontSize="" />
+                </MenuItem>
+              </Link>
+            </>
+          )}
         </Right>
       </Wrapper>
     </Container>
