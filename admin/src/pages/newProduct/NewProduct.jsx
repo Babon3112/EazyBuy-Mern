@@ -1,12 +1,5 @@
 import { useState } from "react";
 import "./newProduct.css";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
-import app from "../../fireBase";
 import { createProduct } from "../../redux/apiCalls";
 import { useDispatch } from "react-redux";
 
@@ -36,7 +29,7 @@ export default function NewProduct() {
     setSize(e.target.value.split(","));
   };
 
-  const handleClick = (e) => {
+  const handleCreate = (e) => {
     e.preventDefault();
     if (!image) {
       console.error("Please select an image");
@@ -151,7 +144,7 @@ export default function NewProduct() {
             <option value="false">No</option>
           </select>
         </div>
-        <button onClick={handleClick} className="addProductButton">
+        <button onClick={handleCreate} className="addProductButton">
           Create
         </button>
       </form>
