@@ -13,7 +13,7 @@ import {
   updateProductStart,
   updateProductSuccess,
 } from "./productRedux";
-import { loginFaliure, loginStart, loginSuccess } from "./userRedux";
+import { loginFaliure, loginStart, loginSuccess, logOut } from "./userRedux";
 
 export const login = async (dispatch, user) => {
   dispatch(loginStart());
@@ -63,4 +63,8 @@ export const createProduct = async (product, dispatch) => {
   } catch (error) {
     dispatch(createProductFailure());
   }
+};
+
+export const logout = async (dispatch, user) => {
+  dispatch(logOut());
 };
