@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const userSchema = new Schema(
   {
     fullName: { type: String, required: true, trim: true },
-    image: { type: String },
+    image: { type: String, default: "" },
     userName: {
       type: String,
       required: true,
