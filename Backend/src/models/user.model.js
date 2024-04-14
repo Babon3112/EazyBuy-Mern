@@ -3,7 +3,11 @@ import mongoose, { Schema } from "mongoose";
 const userSchema = new Schema(
   {
     fullName: { type: String, required: true, trim: true },
-    image: { type: String, default: "" },
+    avatar: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713075499/EazyBuy/Avatar/no-avatar.png",
+    },
     userName: {
       type: String,
       required: true,

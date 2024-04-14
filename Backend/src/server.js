@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import authRouter from "./routers/auth.routes.js";
 import userRouter from "./routers/user.routes.js";
 import cartRouter from "./routers/cart.routes.js";
 import productRouter from "./routers/product.routes.js";
@@ -21,7 +20,6 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use("/eazybuy/v1/auth", authRouter);
 app.use("/eazybuy/v1/users", userRouter);
 app.use("/eazybuy/v1/products", productRouter);
 app.use("/eazybuy/v1/shopping-cart", cartRouter);
