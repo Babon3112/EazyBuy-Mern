@@ -13,33 +13,38 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 70px;
-  margin-bottom: 20px;
+  font-size: 4.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+
+  ${mobile({ fontSize: "3.5rem" })}
 `;
 
 const Description = styled.div`
-  font-size: 25px;
+  font-size: 1.5rem;
   font-weight: 300;
-  margin-bottom: 20px;
-
-  ${mobile({ textAlign: "Center" })}
+  margin-bottom: 2rem;
+  text-align: center;
 `;
 
 const InputContainer = styled.div`
   width: 50%;
-  height: 40px;
+  height: 4rem;
   background-color: #fff;
   display: flex;
   justify-content: space-between;
-  border: 1px solid gray;
+  border: 1px solid #ddd;
+  border-radius: 2rem;
 
-  ${mobile({ width: "80%" })}
+  ${mobile({ width: "80%", height: "3rem" })}
 `;
 
 const Input = styled.input`
   border: none;
   flex: 9;
-  padding: 20px;
+  padding: 1rem;
+  font-size: 1.6rem;
+  ${mobile({ fontSize: "1.3rem" })}
 `;
 
 const Button = styled.button`
@@ -48,6 +53,7 @@ const Button = styled.button`
   border: none;
   background-color: teal;
   color: white;
+  border-radius: 0 5% 5px 0;
 `;
 
 const NewsLetter = () => {
@@ -56,7 +62,7 @@ const NewsLetter = () => {
       <Title>NewsLetter</Title>
       <Description>Get timely updates from your products</Description>
       <InputContainer>
-        <Input placeholder="Your email" />
+        <Input placeholder="Your email" id="send-mesage" />
         <Button>
           <SendTwoToneIcon />
         </Button>

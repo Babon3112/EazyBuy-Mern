@@ -12,15 +12,22 @@ const Container = styled.div``;
 
 const Title = styled.h1`
   margin-left: 15px;
+  color: #333;
+  font-size: 28px;
 `;
 
 const FilterContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-bottom: 30px;
 `;
 
 const Filter = styled.div`
   margin: 20px;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   ${mobile({ margin: "0px 20px", display: "flex", flexDirection: "column" })}
 `;
@@ -29,6 +36,7 @@ const FilterText = styled.span`
   font-size: 20px;
   font-weight: 600;
   margin-right: 20px;
+  color: #555;
 
   ${mobile({ marginRight: "0px" })}
 `;
@@ -36,10 +44,13 @@ const FilterText = styled.span`
 const Select = styled.select`
   padding: 10px;
   margin-right: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 
   ${mobile({ margin: "10px 0px" })}
 `;
 const Option = styled.option``;
+
 
 const ProductList = () => {
   let location = useLocation();
@@ -58,8 +69,8 @@ const ProductList = () => {
 
   return (
     <Container>
-      <Navbar />
       <Announcements />
+      <Navbar />
       <Title>{cat}</Title>
       <FilterContainer>
         <Filter>

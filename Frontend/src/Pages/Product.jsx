@@ -12,7 +12,9 @@ import { publicRequest } from "../requestMethod";
 import { addToCart } from "../redux/cartRedux";
 import { useDispatch } from "react-redux";
 
-const Container = styled.div``;
+const Container = styled.div`
+  background-color: #f7f7f7;
+`;
 
 const Wrapper = styled.div`
   padding: 50px;
@@ -23,11 +25,13 @@ const Wrapper = styled.div`
 
 const ImageContainer = styled.div`
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Image = styled.img`
-  width: 600px;
-  height: 600px;
+  width: 500px;
   object-fit: contain;
 
   ${mobile({ height: "40vh" })}
@@ -41,20 +45,22 @@ const InfoContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  font-weight: 300;
+  font-weight: 600;
+  color: #333;
 `;
 
 const Description = styled.p`
   margin: 20px 0px;
+  color: #555;
 `;
 
 const Price = styled.span`
-  font-weight: 200;
-  font-size: 40px;
+  font-weight: 500;
+  font-size: 36px;
+  color: #2c3e50;
 `;
 
 const FilterContainer = styled.div`
-  width: 50%;
   margin: 30px 0px;
   display: flex;
   justify-content: space-between;
@@ -70,12 +76,13 @@ const Filter = styled.div`
 const FilterTitle = styled.span`
   margin-left: 20px;
   font-size: 20px;
-  font-weight: 200;
+  font-weight: 500;
+  color: #555;
 `;
 
 const FilterColor = styled.div`
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   margin-left: 10px;
   border-radius: 50%;
   margin: 0px 5px;
@@ -96,7 +103,7 @@ const AddContainer = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  ${mobile({ width: "95%" })}
+  ${mobile({ flexDirection: "column" })}
 `;
 
 const AmountContainer = styled.div`
@@ -117,16 +124,16 @@ const Amount = styled.div`
 `;
 
 const Button = styled.button`
-  padding: 15px;
-  border: 2px solid teal;
-  background-color: white;
+  padding: 15px 30px;
+  border: none;
+  background-color: teal;
+  color: white;
   cursor: pointer;
-  font-weight: 500;
-  transition: all 0.5s ease;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
 
   &:hover {
-    background-color: teal;
-    color: white;
+    background-color: #0e8ce4;
   }
 `;
 
@@ -164,8 +171,8 @@ const Product = () => {
 
   return (
     <Container>
-      <Navbar />
       <Announcements />
+      <Navbar />
       <Wrapper>
         <ImageContainer>
           <Image src={product.image} />

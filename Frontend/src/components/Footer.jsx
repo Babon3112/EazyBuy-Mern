@@ -12,8 +12,12 @@ import { mobile } from "../responsive";
 
 const Container = styled.div`
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 50px;
+  background-color: #f9f9f9;
 
-  ${mobile({ flexDirection: "column" })}
+  ${mobile({ flexDirection: "column", padding: "30px" })}
 `;
 
 const Left = styled.div`
@@ -23,10 +27,18 @@ const Left = styled.div`
   padding: 20px;
 `;
 
-const Logo = styled.h1``;
+const Logo = styled.h1`
+  font-family: "Arial", sans-serif;
+  color: #333;
+  font-size: 32px;
+  margin-bottom: 20px;
+`;
 
 const Descriiption = styled.p`
-  margin: 20px 0px;
+  color: #666;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
 `;
 
 const SocialContainer = styled.div`
@@ -43,6 +55,12 @@ const SocialIcon = styled.div`
   align-items: center;
   justify-content: center;
   margin-right: 20px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 const Center = styled.div`
@@ -53,20 +71,28 @@ const Center = styled.div`
 `;
 
 const Title = styled.h3`
-  margin-bottom: 30px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  font-size: 20px;
+  margin-bottom: 20px;
 `;
 
 const List = styled.ul`
   margin: 0;
   padding: 0;
   list-style: none;
-  display: flex;
-  flex-wrap: wrap;
 `;
 
 const ListItem = styled.li`
-  width: 50%;
+ font-size: 16px;
+  color: #666;
   margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #222;
+  }
 `;
 
 const Right = styled.div`
@@ -77,13 +103,15 @@ const Right = styled.div`
 `;
 
 const ContactItem = styled.div`
+   font-size: 16px;
+  color: #666;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
 `;
 
 const Payment = styled.img`
-  width: 50%;
+  width: 100%;
 `;
 
 const Footer = () => {

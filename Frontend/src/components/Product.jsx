@@ -31,6 +31,9 @@ const Container = styled.div`
   justify-content: center;
   background-color: #f5fbfd;
   position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 
   &:hover ${Info} {
     opacity: 1;
@@ -48,6 +51,7 @@ const Circle = styled.div`
 const Image = styled.img`
   height: 75%;
   z-index: 2;
+  border-radius: 15px;
 `;
 
 const Icon = styled.div`
@@ -68,8 +72,6 @@ const Icon = styled.div`
 `;
 
 const Product = ({ product }) => {
-  
-
   return (
     <Container>
       <Circle />

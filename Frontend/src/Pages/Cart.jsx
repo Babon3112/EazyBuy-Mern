@@ -16,6 +16,7 @@ const KEY =
 
 const Container = styled.div`
   background-color: #f8f8f8;
+  min-height: 100vh;
 `;
 
 const Wrapper = styled.div`
@@ -31,6 +32,7 @@ const Title = styled.h1`
   font-weight: 500;
   text-align: center;
   color: #333;
+  margin-bottom: 20px;
 `;
 
 const Top = styled.div`
@@ -38,16 +40,23 @@ const Top = styled.div`
   padding: 20px;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid #ddd;
 `;
 
 const TopButton = styled.button`
-  padding: 10px;
+  padding: 10px 20px;
   font-weight: 600;
   cursor: pointer;
-  border: ${(props) => props.type === "filled" && "none"};
+  border: none;
+  border-radius: 5px;
   background-color: ${(props) =>
-    props.type === "filled" ? "black" : "transparent"};
-  color: ${(props) => props.type === "filled" && "white"};
+    props.type === "filled" ? "#000" : "transparent"};
+  color: ${(props) => (props.type === "filled" ? "#fff" : "#000")};
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: ${(props) => (props.type === "filled" ? "#111" : "#eee")};
+    color: ${(props) => (props.type === "filled" ? "#fff" : "#111")};
+  }
 `;
 
 const TopTexts = styled.span`
@@ -63,6 +72,7 @@ const TopText = styled.span`
 const Bottom = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
 
   ${mobile({ flexDirection: "column" })}
 `;
@@ -146,34 +156,48 @@ const Hr = styled.hr`
 
 const Summary = styled.div`
   flex: 1;
-  border: 0.5px solid lightgrey;
+  border: 1px solid #ddd;
   border-radius: 10px;
   padding: 20px;
-  height: 50vh;
+  height: 100%;
+  overflow-y: auto;
 `;
-const SummaryTitle = styled.h1`
-  font-size: 30px;
-  font-weight: 200;
+const SummaryTitle = styled.h2`
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 20px;
 `;
 
 const SummaryItem = styled.div`
-  margin: 30px 0;
+  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
-  font-weight: ${(props) => props.type === "total" && "500"};
-  font-size: ${(props) => props.type === "total" && "24px"};
+  align-items: center;
 `;
 
-const SummaryItemTexts = styled.span``;
+const SummaryItemTexts = styled.span`
+  font-size: 16px;
+  font-weight: ${(props) => (props.type === "total" ? "600" : "normal")};
+`;
 
-const SummaryItemPrice = styled.span``;
+const SummaryItemPrice = styled.span`
+  font-size: 18px;
+  font-weight: ${(props) => (props.type === "total" ? "600" : "normal")};
+`;
 
 const Button = styled.button`
   width: 100%;
   padding: 10px;
-  background-color: black;
-  color: white;
+  background-color: #000;
+  color: #fff;
   font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: #111;
+  }
 `;
 
 const Cart = () => {
@@ -204,8 +228,8 @@ const Cart = () => {
 
   return (
     <Container>
-      <Navbar />
       <Announcements />
+      <Navbar />
       <Wrapper>
         <Title>Your Bag</Title>
         <Top>
@@ -287,7 +311,6 @@ const Cart = () => {
           </Summary>
         </Bottom>
       </Wrapper>
-
       <Footer />
     </Container>
   );

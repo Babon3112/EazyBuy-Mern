@@ -8,12 +8,8 @@ import { Link } from "react-router-dom";
 const Container = styled.div`
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.5),
-      rgba(255, 255, 255, 0.5)
-    ),
-    url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9YOA2B0bOyzlhJ1KQYhfClIo9wpqWrOXTC86RY838BcqQE8VBocyiqSYW3fpHFInu_gw&usqp=CAU")
-      center;
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url("https://source.unsplash.com/random") center;
   background-size: cover;
   display: flex;
   align-items: center;
@@ -23,27 +19,32 @@ const Container = styled.div`
 const Wrapper = styled.div`
   width: 300px;
   padding: 20px;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgb(255, 255, 255);
 
   ${mobile({ width: "75%" })}
 `;
 
 const Title = styled.h1`
-  font-size: 25px;
-  font-weight: 300;
+  font-size: 28px;
+  font-weight: 400;
+  color: #333;
+  text-align: center;
 `;
 
 const Form = styled.form`
   display: flex;
-  flex-wrap: wrap;
   flex-direction: column;
 `;
 
 const Input = styled.input`
-  flex: 1;
   min-width: 40%;
   margin: 10px 0;
-  padding: 10px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
 `;
 
 const ButtonMiddle = styled.div`
@@ -55,25 +56,36 @@ const ButtonMiddle = styled.div`
 const Button = styled.button`
   width: 40%;
   border: none;
-  padding: 20px 20px;
-  margin: 5px 0;
+  padding: 15px 0;
+  margin: 10px 0;
   color: white;
   background-color: teal;
-  font-size: 15px;
+  font-size: 16px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: all 0.3s ease;
+
   &:disabled {
     background-color: rgba(0, 128, 128, 0.5);
     cursor: not-allowed;
   }
+
+  &:hover {
+    background-color: #0e9c9c;
+  }
 `;
 
-const Span = styled.span`
-  margin: 5px 0;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  color: blue;
-  text-decoration: underline;
+const LinkText = styled(Link)`
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  text-decoration: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #333;
+  }
 `;
 
 const Error = styled.span`
@@ -117,12 +129,8 @@ const signIn = () => {
               Log IN
             </Button>
           </ButtonMiddle>
-          <Link>
-            <Span>FORGOT PASSWORD?</Span>
-          </Link>
-          <Link to="/register">
-            <Span>CREATE A NEW ACCOUNT</Span>
-          </Link>
+          <LinkText to="/forgot-password">Forgot Password? Change it</LinkText>
+          <LinkText to="/register">Don't have an Account? Sign Up</LinkText>
         </Form>
       </Wrapper>
     </Container>
