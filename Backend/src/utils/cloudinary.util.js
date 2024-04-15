@@ -18,7 +18,7 @@ const uploadOnCloudinary = async (filePath, cloudinaryFolder) => {
     fs.unlinkSync(filePath);
     return response;
   } catch (error) {
-    fs.unlinkSync(filePath);
+    fs.unlinkSync(filePath); //remove the saved file from the server as the upload operation got failed
     return null;
   }
 };

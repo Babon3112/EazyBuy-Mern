@@ -7,6 +7,13 @@ import {
 import CryptoJS from "crypto-js";
 import { User } from "../models/user.model.js";
 import { upload } from "../middleWares/multer.middleware.js";
+import {
+  changeUserPassword,
+  getUserDetails,
+  loginUser,
+  registerUser,
+} from "../controllers/user.controller.js";
+import { verifyJWT } from "../middleWares/auth.middleware.js";
 
 const router = Router();
 
@@ -17,74 +24,13 @@ router.route("/register").post(
       maxCount: 1,
     },
   ]),
-  async (req, res) => {
-    const { fullName, userName, mobileNo, email, password } = req.body;
-
-    let avatarLocalPath;
-    if (
-      req.files &&
-      Array.isArray(req.files.coverImage) &&
-      req.files.coverImage.length > 0
-    ) {
-      avatarLocalPath = req.files.coverImage[0].path;
-    }
-
-    const avatar = await uploadOnCloudinary(
-      avatarLocalPath,
-      CLOUD_AVATAR_FOLDER_NAME
-    );
-
-    try {
-      const user = await User.create({
-        userName: userName.toLowerCase(),
-        fullName,
-        mobileNo,
-        email,
-        password: CryptoJS.AES.encrypt(
-          password,
-          process.env.PASSWORD_SECRET
-        ).toString(),
-      });
-      res.status(200).json(user);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
+  registerUser
 );
 
-router.route("/login").post(async (req, res) => {
-  const { email, mobileNo, password } = req.body;
-  try {
-    let user;
-    if (email) {
-      user = await User.findOne({ email });
-    } else if (mobileNo) {
-      user = await User.findOne({ mobileNo });
-    }
-    if (!user) res.status(401).json("user not found");
+router.route("/login").post(loginUser);
 
-    const savedPassword = CryptoJS.AES.decrypt(
-      user.password,
-      process.env.PASSWORD_SECRET
-    );
-    const userPassword = savedPassword.toString(CryptoJS.enc.Utf8);
-    if (password != userPassword) res.status(401).json("wrong password");
-
-    const accessToken = jwt.sign(
-      { id: user._id, isAdmin: user.isAdmin },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
-    );
-
-    const loggedinUser = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
-
-    res.status(200).json({ loggedinUser, accessToken });
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
+router.route("/change-password").post(verifyJWT, changeUserPassword);
+router.route("/your-profile").get(verifyJWT, getUserDetails);
 
 // update details
 router
