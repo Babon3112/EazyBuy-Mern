@@ -29,3 +29,13 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, error?.message || "Invalid Access Token");
   }
 });
+
+export const verifyJWTAndAdmin = (req, res, next) => {
+  verifyJWT(req, res, () => {
+    if (req.user.isAdmin) {
+      next();
+    } else {
+      throw new ApiError(401, "You are not Authorized");
+    }
+  });
+};
