@@ -1,19 +1,21 @@
 import { Router } from "express";
-import {
-  verifyToken,
-  verifyTokenAndAdmin,
-  verifyTokenAndAuthorization,
-} from "../middlewares/verifyToken.js";
-import CryptoJS from "crypto-js";
-import { User } from "../models/user.model.js";
 import { upload } from "../middleWares/multer.middleware.js";
 import {
-  changeUserPassword,
-  getUserDetails,
+  getStats,
   loginUser,
+  logoutUser,
+  deleteUser,
+  getAllUser,
   registerUser,
+  getUserDetails,
+  getUserForAdmin,
+  updateUserDetails,
+  changeUserPassword,
 } from "../controllers/user.controller.js";
-import { verifyJWT } from "../middleWares/auth.middleware.js";
+import {
+  verifyJWTAndAdmin,
+  verifyJWTAndAuthorization,
+} from "../middleWares/auth.middleware.js";
 
 const router = Router();
 
@@ -26,99 +28,25 @@ router.route("/register").post(
   ]),
   registerUser
 );
-
+router.route("/update-details").patch(
+  verifyJWTAndAuthorization,
+  upload.fields([
+    {
+      name: "avatar",
+      maxCount: 1,
+    },
+  ]),
+  updateUserDetails
+);
+router
+  .route("/change-password")
+  .post(verifyJWTAndAuthorization, changeUserPassword);
 router.route("/login").post(loginUser);
-
-router.route("/change-password").post(verifyJWT, changeUserPassword);
-router.route("/your-profile").get(verifyJWT, getUserDetails);
-
-// update details
-router
-  .route("/updatedetails/:id")
-  .put(verifyTokenAndAuthorization, async (req, res) => {
-    if (req.body.password) {
-      const newPassword = CryptoJS.AES.encrypt(
-        req.body.password,
-        process.env.PASSWORD_SECRET
-      ).toString();
-      req.body.password = newPassword;
-    }
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        req.params.id,
-        {
-          $set: req.body,
-        },
-        { new: true }
-      );
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  });
-
-// delete
-router
-  .route("/delete-profile/:id")
-  .delete(verifyTokenAndAuthorization, async (req, res) => {
-    try {
-      await User.findByIdAndDelete(req.params.id);
-      res.status(200).json("User has been deleted.");
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  });
-
-// get user profile
-router.route("/your-profile/:id").get(verifyTokenAndAdmin, async (req, res) => {
-  try {
-    const user = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-// get all user profile
-router.route("/").get(verifyTokenAndAdmin, async (req, res) => {
-  const query = req.query.new;
-
-  try {
-    const users = query
-      ? await User.find().sort({ _id: -1 }).limit(5)
-      : await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-// get user stats
-router.route("/stats").get(verifyTokenAndAdmin, async (req, res) => {
-  const date = new Date();
-  const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
-
-  try {
-    const data = await User.aggregate([
-      { $match: { createdAt: { $gte: lastYear } } },
-      {
-        $project: {
-          month: { $month: "$createdAt" },
-        },
-      },
-      {
-        $group: {
-          _id: "$month",
-          total: { $sum: 1 },
-        },
-      },
-    ]);
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
+router.route("/").get(verifyJWTAndAdmin, getAllUser);
+router.route("/stats").get(verifyJWTAndAdmin, getStats);
+router.route("/:userId").get(verifyJWTAndAdmin, getUserForAdmin);
+router.route("/logout").post(verifyJWTAndAuthorization, logoutUser);
+router.route("/your-profile").get(verifyJWTAndAuthorization, getUserDetails);
+router.route("/delete-profile").delete(verifyJWTAndAuthorization, deleteUser);
 
 export default router;
