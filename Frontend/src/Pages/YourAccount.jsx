@@ -4,8 +4,10 @@ import Announcements from "../components/Announcements";
 import Navbar from "../components/Navbar";
 import NewsLetter from "../components/NewsLetter";
 import Footer from "../components/Footer";
-import { useSelector } from "react-redux";
 import { mobile } from "../responsive";
+import { update } from "../redux/apiCalls";
+import { useDispatch, useSelector } from "react-redux";
+import { userRequest } from "../requestMethod";
 
 const Container = styled.div`
   background-color: #f9f9f9;
@@ -75,20 +77,54 @@ const SubmitButton = styled.button`
 `;
 
 const YourAccount = () => {
-  const user = useSelector((state) => state.user.currentUser.data.user);
+  const userDetails = useSelector((state) => state.user.currentUser.data.user);
+
   const [avatar, setAvatar] = useState(null);
-  const [fullName, setFullName] = useState(user.fullName);
-  const [userName, setUserName] = useState(user.userName);
-  const [mobileNo, setMobileNo] = useState(user.mobileNo);
-  const [email, setEmail] = useState(user.email);
+  const [fullName, setFullName] = useState(userDetails.fullName);
+  const [userName, setUserName] = useState(userDetails.userName);
+  const [mobileNo, setMobileNo] = useState(userDetails.mobileNo);
+  const [email, setEmail] = useState(userDetails.email);
+  const dispatch = useDispatch();
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     setAvatar(file);
   };
 
-  const handleUpdate = (e) => {
+  const isValidMobile = (mobile) => {
+    const re = /^[0-9]{10}$/;
+    return re.test(mobile);
+  };
+
+  const isValidEmail = (email) => {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  };
+
+  const handleUpdate = async (e) => {
     e.preventDefault();
+
+    if (!isValidMobile(mobileNo)) {
+      alert("Please enter a valid mobile number");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    const formData = new FormData();
+    if (fullName !== userDetails.fullName) formData.append("fullName", fullName);
+    if (userName !== userDetails.userName) formData.append("userName", userName);
+    if (mobileNo !== userDetails.mobileNo) formData.append("mobileNo", mobileNo);
+    if (email !== userDetails.email) formData.append("email", email);
+    if (avatar) formData.append("avatar", avatar);
+
+    try {
+      await update(dispatch, formData);
+      window.location.reload()
+    } catch (error) {}
   };
 
   return (
@@ -102,7 +138,7 @@ const YourAccount = () => {
           ) : (
             <AvatarPreview
               src={
-                user.avatar ||
+                userDetails.avatar ||
                 "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713075500/EazyBuy/Avatar/upload-avatar.png"
               }
             />
@@ -117,28 +153,28 @@ const YourAccount = () => {
         <Input
           type="text"
           id="Full name"
-          placeholder={user.fullName}
+          placeholder={userDetails.fullName}
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
         />
         <Input
           type="text"
           id="username"
-          placeholder={user.userName}
+          placeholder={userDetails.userName}
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
         />
         <Input
           type="tel"
           id="mobile no"
-          placeholder={user.mobileNo}
+          placeholder={userDetails.mobileNo}
           value={mobileNo}
           onChange={(e) => setMobileNo(e.target.value)}
         />
         <Input
           type="email"
           id="email"
-          placeholder={user.email}
+          placeholder={userDetails.email}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
