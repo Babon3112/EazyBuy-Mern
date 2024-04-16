@@ -3,9 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 const userSlice = createSlice({
   name: "user",
   initialState: {
+    user: null,
     currentUser: null,
     isFetching: false,
     error: false,
+    passwordChangeSuccess: false, // New state to track password change success
   },
   reducers: {
     registerUserStart: (state) => {
@@ -13,11 +15,11 @@ const userSlice = createSlice({
     },
     registerUserSuccess: (state, action) => {
       state.isFetching = false;
-      state.currentUser = action.payload;
+      state.user = action.payload;
     },
-    registerUserFaliure: (state, action) => {
+    registerUserFailure: (state, action) => {
       state.isFetching = false;
-      state.error = action.error;
+      state.error = action.payload;
     },
     loginStart: (state) => {
       state.isFetching = true;
@@ -26,7 +28,7 @@ const userSlice = createSlice({
       state.isFetching = false;
       state.currentUser = action.payload;
     },
-    loginFaliure: (state) => {
+    loginFailure: (state) => {
       state.isFetching = false;
       state.error = true;
     },
@@ -39,10 +41,11 @@ const userSlice = createSlice({
 export const {
   registerUserStart,
   registerUserSuccess,
-  registerUserFaliure,
+  registerUserFailure,
   loginStart,
-  loginFaliure,
+  loginFailure,
   loginSuccess,
   logOut,
 } = userSlice.actions;
+
 export default userSlice.reducer;

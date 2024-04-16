@@ -21,7 +21,7 @@ function App() {
   const User = useSelector((state) => state.user.currentUser);
   let admin;
   if (User) {
-    admin = User.loggedinUser.isAdmin;
+    admin = User.data.user.isAdmin;
   }
 
   return (
@@ -32,7 +32,7 @@ function App() {
           element={admin ? <Navigate to="/" /> : <Login />}
         />
       </Routes>
-      {admin && (
+      {admin ? (
         <>
           <Topbar />
           <div className="container">
@@ -48,6 +48,8 @@ function App() {
             </Routes>
           </div>
         </>
+      ) : (
+        <Navigate to="/login" />
       )}
     </Router>
   );

@@ -4,8 +4,8 @@ import { createProduct } from "../../redux/apiCalls";
 import { useDispatch } from "react-redux";
 
 export default function NewProduct() {
+  const [productImage, setProductImage] = useState(null);
   const [inputs, setInputs] = useState({});
-  const [image, setImage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [color, setColor] = useState([]);
   const [size, setSize] = useState([]);
@@ -29,33 +29,38 @@ export default function NewProduct() {
     setSize(e.target.value.split(","));
   };
 
+  console.log(productImage);
+
   const handleCreate = (e) => {
     e.preventDefault();
-    // if (!image) {
-    //   console.error("Please select an image");
-    //   return;
-    // }
+    if (!productImage) {
+      console.error("Please select an image");
+      return;
+    }
 
-    const product = {
-      ...inputs,
-      // image: downloadURL,
-      categories: categories,
-      color: color,
-      size: size,
-    };
-    createProduct(product, dispatch);
+    const formData = new FormData();
+    formData.append("productImage", productImage);
+    formData.append("title", inputs.title);
+    formData.append("description", inputs.description);
+    formData.append("price", inputs.price);
+    formData.append("categories", categories);
+    formData.append("color", color);
+    formData.append("size", size);
+    formData.append("inStock", inputs.inStock === "true" ? true : false);
+
+    createProduct(formData, dispatch);
   };
 
   return (
     <div className="newProduct">
       <h1 className="addProductTitle">New Product</h1>
-      <form className="addProductForm">
+      <form className="addProductForm" encType="multipart/form-data">
         <div className="addProductItem">
           <label>Image</label>
           <input
             type="file"
             id="file"
-            onChange={(e) => setImage(e.target.files[0])}
+            onChange={(e) => setProductImage(e.target.files[0])}
           />
         </div>
         <div className="addProductItem">

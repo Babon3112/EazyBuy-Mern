@@ -106,7 +106,8 @@ const Image = styled.img`
 const Navbar = () => {
   const quantity = useSelector((state) => state.cart.quantity);
   let user = useSelector((state) => state.user.currentUser);
-  if (user) user = user.data;
+  let loggedUser;
+  if (user) loggedUser = user.data.user;
 
   const dispatch = useDispatch();
 
@@ -152,9 +153,17 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/your-account" style={{ textDecoration: "none", color: "black" }}>
+              <Link
+                to="/your-account"
+                style={{ textDecoration: "none", color: "black" }}
+              >
                 <MenuItem>
-                  <Image src={user.avatar} />
+                  <Image
+                    src={
+                      loggedUser.avatar ||
+                      "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713075500/EazyBuy/Avatar/upload-avatar.png"
+                    }
+                  />
                 </MenuItem>
               </Link>
               <Link

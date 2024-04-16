@@ -124,7 +124,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { loading, error, user } = useSelector((state) => state.user);
+  const { loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -143,7 +143,7 @@ const Register = () => {
     setAvatar(file);
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     if (!isValidMobile(mobileNo)) {
@@ -169,7 +169,10 @@ const Register = () => {
     formData.append("password", password);
     formData.append("avatar", avatar);
 
-    register(dispatch, formData);
+    try {
+      await register(dispatch, formData);
+      navigate("/login");
+    } catch (error) {}
   };
 
   const gotologin = () => {

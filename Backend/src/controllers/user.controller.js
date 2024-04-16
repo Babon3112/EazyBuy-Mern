@@ -64,6 +64,9 @@ const registerUser = asyncHandler(async (req, res) => {
     avatarLocalPath,
     CLOUD_AVATAR_FOLDER_NAME
   );
+  if (avatarLocalPath && !avatar) {
+    throw new ApiError(500, "Something went wrong while uploading avatar");
+  }
 
   const user = await User.create({
     avatar: avatar?.url,
@@ -159,19 +162,19 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const changeUserPassword = asyncHandler(async (req, res) => {
-  const { oldPassword, newPassword } = req.body;
-  if (!(oldPassword || newPassword)) {
-    throw new ApiError(400, "oldPassword or newPassword required");
+  const { currentPassword, newPassword } = req.body;
+  if (!(currentPassword || newPassword)) {
+    throw new ApiError(400, "currentPassword or newPassword required");
   }
 
   const user = await User.findById(req.user?._id);
-  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+  const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
 
   if (!isPasswordCorrect) {
-    throw new ApiError(400, "Invalid old password");
+    throw new ApiError(400, "Invalid current password");
   }
 
-  if (oldPassword === newPassword) {
+  if (currentPassword === newPassword) {
     throw new ApiError(400, "New password cannot be same as old password");
   }
   user.password = newPassword;
@@ -239,6 +242,9 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     avatarLocalPath,
     CLOUD_AVATAR_FOLDER_NAME
   );
+  if (avatarLocalPath && !avatar) {
+    throw new ApiError(500, "Something went wrong while uploading avatar");
+  }
 
   if (avatar) {
     toUpdate["avatar"] = avatar.url;
@@ -252,7 +258,7 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password -refreshToken");
 
-  res
+  return res
     .status(200)
     .json(
       new ApiResponse(200, updateduser, "User details updated successfully")
@@ -299,7 +305,7 @@ const getAllUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Error while fetching users");
   }
 
-  res
+  return res
     .status(200)
     .json(new ApiResponse(200, users, "All users fetched successfully"));
 });
@@ -330,7 +336,7 @@ const getStats = asyncHandler(async (req, res) => {
     );
   }
 
-  res
+  return res
     .status(200)
     .json(
       new ApiResponse(

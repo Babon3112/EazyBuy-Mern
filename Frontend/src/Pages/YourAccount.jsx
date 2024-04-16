@@ -75,7 +75,7 @@ const SubmitButton = styled.button`
 `;
 
 const YourAccount = () => {
-  const user = useSelector((state) => state.user.currentUser.loggedinUser);
+  const user = useSelector((state) => state.user.currentUser.data.user);
   const [avatar, setAvatar] = useState(null);
   const [fullName, setFullName] = useState(user.fullName);
   const [userName, setUserName] = useState(user.userName);
@@ -100,7 +100,12 @@ const YourAccount = () => {
           {avatar ? (
             <AvatarPreview src={URL.createObjectURL(avatar)} />
           ) : (
-            <AvatarPreview src={user.avatar} />
+            <AvatarPreview
+              src={
+                user.avatar ||
+                "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713075500/EazyBuy/Avatar/upload-avatar.png"
+              }
+            />
           )}
           <AvatarInput
             type="file"
@@ -111,24 +116,28 @@ const YourAccount = () => {
         </AvatarLabel>
         <Input
           type="text"
+          id="Full name"
           placeholder={user.fullName}
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
         />
         <Input
           type="text"
+          id="username"
           placeholder={user.userName}
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
         />
         <Input
           type="tel"
+          id="mobile no"
           placeholder={user.mobileNo}
           value={mobileNo}
           onChange={(e) => setMobileNo(e.target.value)}
         />
         <Input
           type="email"
+          id="email"
           placeholder={user.email}
           value={email}
           onChange={(e) => setEmail(e.target.value)}

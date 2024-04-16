@@ -105,7 +105,7 @@ const signIn = () => {
     if (isEmail) {
       login(dispatch, { email: identifier, password });
     } else {
-      login(dispatch, { mobileNo: identifier, password });
+      login(dispatch, { userName: identifier, password });
     }
   };
 
@@ -115,7 +115,7 @@ const signIn = () => {
         <Title>SIGN IN</Title>
         <Form>
           <Input
-            placeholder="Email or MobileNo"
+            placeholder="Email or username"
             onChange={(e) => setIdentifier(e.target.value)}
           />
           <Input

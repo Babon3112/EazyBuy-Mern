@@ -71,7 +71,7 @@ const Center = styled.div`
 `;
 
 const Title = styled.h3`
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   color: #333;
   font-size: 20px;
   margin-bottom: 20px;
@@ -84,7 +84,7 @@ const List = styled.ul`
 `;
 
 const ListItem = styled.li`
- font-size: 16px;
+  font-size: 16px;
   color: #666;
   margin-bottom: 10px;
   cursor: pointer;
@@ -103,7 +103,7 @@ const Right = styled.div`
 `;
 
 const ContactItem = styled.div`
-   font-size: 16px;
+  font-size: 16px;
   color: #666;
   margin-bottom: 20px;
   display: flex;
@@ -111,7 +111,9 @@ const ContactItem = styled.div`
 `;
 
 const Payment = styled.img`
-  width: 100%;
+  width: 50%;
+
+  ${mobile({ width: "100%" })}
 `;
 
 const Footer = () => {

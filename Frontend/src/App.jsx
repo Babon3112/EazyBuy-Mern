@@ -13,29 +13,35 @@ import {
   Route,
 } from "react-router-dom";
 import YourAccount from "./Pages/YourAccount";
+import ChangePassword from "./Pages/ChangePassword";
 
 function App() {
   const user = useSelector((state) => state.user.currentUser);
+  const accessToken = user?.data.accessToken;
 
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+        <Route path="/product/:id" element={<Product />} />
+        <Route path="/productlist/:category" element={<ProductList />} />
+        <Route path="/login" element={accessToken ? <Navigate to="/" /> : <Login />} />
         <Route
           path="/register"
-          element={user ? <Navigate to="/" /> : <Register />}
+          element={accessToken ? <Navigate to="/" /> : <Register />}
         />
-        <Route path="/product/:id" element={<Product />} />
         <Route
           path="/success"
-          element={user ? <Success /> : <Navigate to="/" />}
+          element={accessToken ? <Success /> : <Navigate to="/" />}
         />
-        <Route path="/productlist/:category" element={<ProductList />} />
         <Route
           path="/your-account"
-          element={user ? <YourAccount /> : <Navigate to="/" />}
+          element={accessToken ? <YourAccount /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/change-password"
+          element={accessToken ? <ChangePassword /> : <Navigate to="/" />}
         />
       </Routes>
     </Router>

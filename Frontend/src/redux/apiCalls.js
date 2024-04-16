@@ -1,15 +1,12 @@
-import { publicRequest } from "../requestMethod";
+import { publicRequest, userRequest } from "../requestMethod";
 import {
-  getUserFailure,
-  getUserStart,
-  getUserSuccess,
-  loginFaliure,
+  loginFailure,
   loginStart,
   loginSuccess,
   logOut,
   registerUserStart,
   registerUserSuccess,
-  registerUserFaliure,
+  registerUserFailure,
 } from "./userRedux";
 
 export const register = async (dispatch, user) => {
@@ -18,7 +15,7 @@ export const register = async (dispatch, user) => {
     const res = await publicRequest.post("/users/register", user);
     dispatch(registerUserSuccess(res.data));
   } catch (error) {
-    dispatch(registerUserFaliure());
+    dispatch(registerUserFailure());
   }
 };
 
@@ -28,10 +25,12 @@ export const login = async (dispatch, user) => {
     const res = await publicRequest.post("/users/login", user);
     dispatch(loginSuccess(res.data));
   } catch (error) {
-    dispatch(loginFaliure());
+    dispatch(loginFailure());
   }
 };
 
 export const logout = async (dispatch, user) => {
+  const res = await userRequest.post("/users/logout", user);
   dispatch(logOut());
 };
+
