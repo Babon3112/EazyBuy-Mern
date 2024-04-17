@@ -7,17 +7,16 @@ const userSlice = createSlice({
     currentUser: null,
     isFetching: false,
     error: false,
-    passwordChangeSuccess: false, // New state to track password change success
   },
   reducers: {
-    registerUserStart: (state) => {
+    registerStart: (state) => {
       state.isFetching = true;
     },
-    registerUserSuccess: (state, action) => {
+    registerSuccess: (state, action) => {
       state.isFetching = false;
       state.user = action.payload;
     },
-    registerUserFailure: (state, action) => {
+    registerFailure: (state, action) => {
       state.isFetching = false;
       state.error = action.payload;
     },
@@ -35,17 +34,45 @@ const userSlice = createSlice({
     logOut: (state) => {
       state.currentUser = null;
     },
+    updateStart: (state) => {
+      state.isFetching = true;
+    },
+    updateSuccess: (state, action) => {
+      state.isFetching = false;
+      state.currentUser.data.user = action.payload;
+    },
+    updateFailure: (state) => {
+      state.isFetching = false;
+      state.error = true;
+    },
+    deleteStart: (state) => {
+      state.isFetching = true;
+    },
+    deleteSuccess: (state, action) => {
+      state.isFetching = false;
+      state.currentUser = null;
+    },
+    deleteFailure: (state) => {
+      state.isFetching = false;
+      state.error = true;
+    },
   },
 });
 
 export const {
-  registerUserStart,
-  registerUserSuccess,
-  registerUserFailure,
+  registerStart,
+  registerSuccess,
+  registerFailure,
   loginStart,
   loginFailure,
   loginSuccess,
   logOut,
+  updateStart,
+  updateSuccess,
+  updateFailure,
+  deleteStart,
+  deleteSuccess,
+  deleteFailure,
 } = userSlice.actions;
 
 export default userSlice.reducer;
