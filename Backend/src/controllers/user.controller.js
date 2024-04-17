@@ -188,7 +188,13 @@ const changeUserPassword = asyncHandler(async (req, res) => {
 const getUserDetails = asyncHandler(async (req, res) => {
   return res
     .status(200)
-    .json(new ApiResponse(200, req.user, "Current User fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { user: req.user },
+        "Current User fetched successfully"
+      )
+    );
 });
 
 const updateUserDetails = asyncHandler(async (req, res) => {
@@ -232,16 +238,21 @@ const updateUserDetails = asyncHandler(async (req, res) => {
   }
 
   if (avatarLocalPath) {
-    const delSuccess = await deleteFromCloudinary(user.avatar);
-    if (!delSuccess) {
-      throw new ApiError(500, "Something went wrong while updating avatar");
+    if (user.avatar !== "") {
+      const delSuccess = await deleteFromCloudinary(user.avatar);
+      if (!delSuccess) {
+        throw new ApiError(
+          500,
+          "Something went wrong while deleting previous avatar"
+        );
+      }
     }
   }
 
-  const avatar = await uploadOnCloudinary(
-    avatarLocalPath,
-    CLOUD_AVATAR_FOLDER_NAME
-  );
+  const avatar = avatarLocalPath
+    ? await uploadOnCloudinary(avatarLocalPath, CLOUD_AVATAR_FOLDER_NAME)
+    : null;
+
   if (avatarLocalPath && !avatar) {
     throw new ApiError(500, "Something went wrong while uploading avatar");
   }
@@ -250,7 +261,7 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     toUpdate["avatar"] = avatar.url;
   }
 
-  const updateduser = await User.findByIdAndUpdate(
+  const updatedUser = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: { ...toUpdate },
@@ -261,16 +272,26 @@ const updateUserDetails = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updateduser, "User details updated successfully")
+      new ApiResponse(200, updatedUser, "User details updated successfully")
     );
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  if (!password) {
+    throw new ApiError(400, "password is required");
+  }
   const user = await User.findById(req.user?._id);
+  const isPasswordCorrect = await user.isPasswordCorrect(password);
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Invalid password");
+  }
 
-  const delSuccess = await deleteFromCloudinary(user.avatar);
-  if (!delSuccess) {
-    throw new ApiError(500, "Something went wrong while deleting avatar");
+  if (user.avatar !== "") {
+    const delSuccess = await deleteFromCloudinary(user.avatar);
+    if (!delSuccess) {
+      throw new ApiError(500, "Something went wrong while deleting avatar");
+    }
   }
 
   const userDelete = await User.findByIdAndDelete(user._id);
