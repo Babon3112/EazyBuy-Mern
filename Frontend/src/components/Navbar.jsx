@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Badge } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -101,18 +101,59 @@ const Image = styled.img`
   height: 40px;
   border-radius: 50%;
   margin: 0 10px;
+  object-fit: cover;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 105px;
+  right: 5px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+`;
+
+const DropdownItem = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: #f3f3f3;
+  }
 `;
 
 const Navbar = () => {
   const quantity = useSelector((state) => state.cart.quantity);
   let user = useSelector((state) => state.user.currentUser);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const dispatch = useDispatch();
   let loggedUser;
   if (user) loggedUser = user.data.user;
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   const handleLogout = (e) => {
-    logout(dispatch);
+    logout(dispatch).then(() => window.location.reload());
   };
 
   return (
@@ -152,31 +193,42 @@ const Navbar = () => {
               </Link>
             </>
           ) : (
-            <>
-              <Link
-                to="/your-account"
-                style={{ textDecoration: "none", color: "black" }}
-              >
-                <MenuItem>
-                  <Image
-                    src={
-                      loggedUser.avatar ||
-                      "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713075500/EazyBuy/Avatar/upload-avatar.png"
-                    }
-                  />
-                </MenuItem>
-              </Link>
-              <Link
-                to="/"
-                style={{ textDecoration: "none", color: "black" }}
-                onClick={handleLogout}
-              >
-                <MenuItem>
-                  Log Out
-                  <LogoutIcon fontSize="" />
-                </MenuItem>
-              </Link>
-            </>
+            <div ref={dropdownRef}>
+              <MenuItem onClick={toggleDropdown}>
+                <Image
+                  src={
+                    loggedUser.avatar ||
+                    "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713075500/EazyBuy/Avatar/upload-avatar.png"
+                  }
+                />
+              </MenuItem>
+              {isDropdownOpen && (
+                <DropdownMenu>
+                  <Link
+                    to="/your-account"
+                    style={{ textDecoration: "none", color: "black" }}
+                  >
+                    <DropdownItem>Your Account</DropdownItem>
+                  </Link>
+                  <Link
+                    to="/change-password"
+                    style={{ textDecoration: "none", color: "black" }}
+                  >
+                    <DropdownItem>Change password</DropdownItem>
+                  </Link>
+                  <Link
+                    to="/delete-account"
+                    style={{ textDecoration: "none", color: "black" }}
+                  >
+                    <DropdownItem>Delete account</DropdownItem>
+                  </Link>
+                  <DropdownItem onClick={handleLogout}>
+                    Logout
+                    <LogoutIcon fontSize="" />
+                  </DropdownItem>
+                </DropdownMenu>
+              )}
+            </div>
           )}
         </Right>
       </Wrapper>
