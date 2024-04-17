@@ -22,10 +22,10 @@ import productRouter from "./routers/product.routes.js";
 import orderRouter from "./routers/order.routes.js";
 import paymentRouter from "./routers/payment.routes.js";
 
-app.use("/eazybuy/v1/users", userRouter);
-app.use("/eazybuy/v1/orders", orderRouter);
-app.use("/eazybuy/v1/products", productRouter);
-app.use("/eazybuy/v1/shopping-cart", cartRouter);
+app.use("/eazybuy/api/v1/users", userRouter);
+app.use("/eazybuy/api/v1/orders", orderRouter);
+app.use("/eazybuy/api/v1/products", productRouter);
+app.use("/eazybuy/api/v1/shopping-cart", cartRouter);
 // app.use("/eazybuy/v1/checkout", paymentRouter);
 
 export { app };
