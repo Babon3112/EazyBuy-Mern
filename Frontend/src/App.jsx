@@ -14,6 +14,7 @@ import {
 } from "react-router-dom";
 import YourAccount from "./Pages/YourAccount";
 import ChangePassword from "./Pages/ChangePassword";
+import DeleteAccount from "./Pages/DeleteAccount";
 
 function App() {
   const user = useSelector((state) => state.user.currentUser);
@@ -26,7 +27,10 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/product/:id" element={<Product />} />
         <Route path="/productlist/:category" element={<ProductList />} />
-        <Route path="/login" element={accessToken ? <Navigate to="/" /> : <Login />} />
+        <Route
+          path="/login"
+          element={accessToken ? <Navigate to="/" /> : <Login />}
+        />
         <Route
           path="/register"
           element={accessToken ? <Navigate to="/" /> : <Register />}
@@ -42,6 +46,10 @@ function App() {
         <Route
           path="/change-password"
           element={accessToken ? <ChangePassword /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/delete-account"
+          element={accessToken ? <DeleteAccount /> : <Navigate to="/" />}
         />
       </Routes>
     </Router>
