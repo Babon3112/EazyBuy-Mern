@@ -41,7 +41,7 @@ export const verifyJWTAndAdmin = asyncHandler(async (req, res, next) => {
     const user = await verifyJWT(req);
 
     if (!user.isAdmin) {
-      throw new ApiError(403, "You are not Authorized!");
+      throw new ApiError(403, "You are not an Admin!");
     }
 
     req.user = user;
