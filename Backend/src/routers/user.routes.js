@@ -42,11 +42,11 @@ router
   .route("/change-password")
   .post(verifyJWTAndAuthorization, changeUserPassword);
 router.route("/login").post(loginUser);
+router.route("/logout").post(verifyJWTAndAuthorization, logoutUser);
+router.route("/your-profile").get(verifyJWTAndAuthorization, getUserDetails);
+router.route("/delete-account").delete(verifyJWTAndAuthorization, deleteUser);
 router.route("/").get(verifyJWTAndAdmin, getAllUser);
 router.route("/stats").get(verifyJWTAndAdmin, getStats);
 router.route("/:userId").get(verifyJWTAndAdmin, getUserForAdmin);
-router.route("/logout").post(verifyJWTAndAuthorization, logoutUser);
-router.route("/your-profile").get(verifyJWTAndAuthorization, getUserDetails);
-router.route("/delete-profile").delete(verifyJWTAndAuthorization, deleteUser);
 
 export default router;
