@@ -3,13 +3,20 @@ import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { userRequest } from "../requestMethod";
+import Announcements from "../components/Announcements";
 
-const Container = styled.div``;
+const Container = styled.div`
+  background-color: #f4f4f4;
+`;
 
 const Wrapper = styled.div`
+  padding: 50px;
+  height: 30%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
 `;
 
 const Div = styled.div`
@@ -46,7 +53,7 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  background-color: #007bff;
+  background-color: teal;
   color: #fff;
   padding: 12px 20px;
   border: none;
@@ -83,12 +90,12 @@ const ChangePassword = () => {
     }
 
     try {
-      await userRequest.post("/users/change-password", {
-        currentPassword,
-        newPassword,
-      });
-
-      setSuccessMessage("Password changed successfully!");
+      await userRequest
+        .post("/users/change-password", {
+          currentPassword,
+          newPassword,
+        })
+        .then(() => setSuccessMessage("Password changed successfully!"));
       setCurrentPassword("");
       setNewPassword("");
       setNewConfirmPassword("");
@@ -99,6 +106,7 @@ const ChangePassword = () => {
 
   return (
     <Container>
+      <Announcements />
       <Navbar />
       <Wrapper>
         <Div>

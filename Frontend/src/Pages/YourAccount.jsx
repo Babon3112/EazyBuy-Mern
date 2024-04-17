@@ -5,21 +5,31 @@ import Navbar from "../components/Navbar";
 import NewsLetter from "../components/NewsLetter";
 import Footer from "../components/Footer";
 import { mobile } from "../responsive";
-import { update } from "../redux/apiCalls";
+import { updateAccount } from "../redux/apiCalls";
 import { useDispatch, useSelector } from "react-redux";
 import { userRequest } from "../requestMethod";
 
 const Container = styled.div`
-  background-color: #f9f9f9;
-  min-height: 100vh;
+  background-color: #f4f4f4;
 `;
 
-const CenteredDiv = styled.div`
+const Wrapper = styled.div`
+  padding: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+`;
+
+const Div = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
 `;
 
 const AvatarInput = styled.input`
@@ -42,7 +52,7 @@ const AvatarPreview = styled.img`
 `;
 
 const Input = styled.input`
-  width: 500px;
+  width: 400px;
   margin-bottom: 20px;
   padding: 15px;
   border: 1px solid #ddd;
@@ -115,15 +125,19 @@ const YourAccount = () => {
     }
 
     const formData = new FormData();
-    if (fullName !== userDetails.fullName) formData.append("fullName", fullName);
-    if (userName !== userDetails.userName) formData.append("userName", userName);
-    if (mobileNo !== userDetails.mobileNo) formData.append("mobileNo", mobileNo);
+    if (fullName !== userDetails.fullName)
+      formData.append("fullName", fullName);
+    if (userName !== userDetails.userName)
+      formData.append("userName", userName);
+    if (mobileNo !== userDetails.mobileNo)
+      formData.append("mobileNo", mobileNo);
     if (email !== userDetails.email) formData.append("email", email);
     if (avatar) formData.append("avatar", avatar);
 
     try {
-      await update(dispatch, formData);
-      window.location.reload()
+      await updateAccount(dispatch, formData).then(() =>
+        window.location.reload()
+      );
     } catch (error) {}
   };
 
@@ -131,55 +145,57 @@ const YourAccount = () => {
     <Container>
       <Announcements />
       <Navbar />
-      <CenteredDiv>
-        <AvatarLabel>
-          {avatar ? (
-            <AvatarPreview src={URL.createObjectURL(avatar)} />
-          ) : (
-            <AvatarPreview
-              src={
-                userDetails.avatar ||
-                "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713075500/EazyBuy/Avatar/upload-avatar.png"
-              }
+      <Wrapper>
+        <Div>
+          <AvatarLabel>
+            {avatar ? (
+              <AvatarPreview src={URL.createObjectURL(avatar)} />
+            ) : (
+              <AvatarPreview
+                src={
+                  userDetails.avatar ||
+                  "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713075500/EazyBuy/Avatar/upload-avatar.png"
+                }
+              />
+            )}
+            <AvatarInput
+              type="file"
+              id="avatar"
+              accept="image/*"
+              onChange={handleAvatarChange}
             />
-          )}
-          <AvatarInput
-            type="file"
-            id="avatar"
-            accept="image/*"
-            onChange={handleAvatarChange}
+          </AvatarLabel>
+          <Input
+            type="text"
+            id="Full name"
+            placeholder={userDetails.fullName}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
           />
-        </AvatarLabel>
-        <Input
-          type="text"
-          id="Full name"
-          placeholder={userDetails.fullName}
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
-        <Input
-          type="text"
-          id="username"
-          placeholder={userDetails.userName}
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-        />
-        <Input
-          type="tel"
-          id="mobile no"
-          placeholder={userDetails.mobileNo}
-          value={mobileNo}
-          onChange={(e) => setMobileNo(e.target.value)}
-        />
-        <Input
-          type="email"
-          id="email"
-          placeholder={userDetails.email}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <SubmitButton onClick={handleUpdate}>Update Details</SubmitButton>
-      </CenteredDiv>
+          <Input
+            type="text"
+            id="username"
+            placeholder={userDetails.userName}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+          <Input
+            type="tel"
+            id="mobile no"
+            placeholder={userDetails.mobileNo}
+            value={mobileNo}
+            onChange={(e) => setMobileNo(e.target.value)}
+          />
+          <Input
+            type="email"
+            id="email"
+            placeholder={userDetails.email}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <SubmitButton onClick={handleUpdate}>Update Details</SubmitButton>
+        </Div>
+      </Wrapper>
       <NewsLetter />
       <Footer />
     </Container>
