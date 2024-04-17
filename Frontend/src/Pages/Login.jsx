@@ -103,9 +103,13 @@ const signIn = () => {
     e.preventDefault();
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
     if (isEmail) {
-      login(dispatch, { email: identifier, password });
+      login(dispatch, { email: identifier, password }).then(() =>
+        window.location.reload()
+      );
     } else {
-      login(dispatch, { userName: identifier, password });
+      login(dispatch, { userName: identifier, password }).then(() =>
+        window.location.reload()
+      );
     }
   };
 
