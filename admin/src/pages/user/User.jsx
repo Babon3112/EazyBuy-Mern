@@ -1,57 +1,64 @@
+import "./user.css";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import PublishIcon from "@mui/icons-material/Publish";
-import { Link } from "react-router-dom";
-import "./user.css";
+import { Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function User() {
+  const location = useLocation();
+  const userId = location.pathname.split("/")[2];
+
+  const user = useSelector((state) =>
+    state.user.users.find((user) => user._id === userId)
+  );
+
   return (
     <div className="user">
       <div className="userTitleContainer">
-        <h1 className="userTitle">Edit User</h1>
-        <Link to="/newUser">
-          <button className="userAddButton">Create</button>
-        </Link>
+        <h1 className="userTitle">View User</h1>
+        <Link to="/newUser"></Link>
       </div>
       <div className="userContainer">
         <div className="userShow">
           <div className="userShowTop">
             <img
-              src="https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-              alt=""
+              src={
+                user.avatar ||
+                "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713427478/EazyBuy/Avatar/no-avatar.png"
+              }
               className="userShowImg"
             />
             <div className="userShowTopTitle">
-              <span className="userShowUsername">Anna Becker</span>
-              <span className="userShowUserTitle">Software Engineer</span>
+              <span className="userShowUsername">{user.fullName}</span>
             </div>
           </div>
           <div className="userShowBottom">
             <span className="userShowTitle">Account Details</span>
             <div className="userShowInfo">
               <PermIdentityIcon className="userShowIcon" />
-              <span className="userShowInfoTitle">annabeck99</span>
+              <span className="userShowInfoTitle">{user.userName}</span>
             </div>
             <div className="userShowInfo">
               <CalendarTodayIcon className="userShowIcon" />
-              <span className="userShowInfoTitle">10.12.1999</span>
+              <span className="userShowInfoTitle">{user.createdAt}</span>
             </div>
             <span className="userShowTitle">Contact Details</span>
             <div className="userShowInfo">
               <PhoneAndroidIcon className="userShowIcon" />
-              <span className="userShowInfoTitle">+1 123 456 67</span>
+              <span className="userShowInfoTitle">{user.mobileNo}</span>
             </div>
             <div className="userShowInfo">
               <MailOutlineIcon className="userShowIcon" />
-              <span className="userShowInfoTitle">annabeck99@gmail.com</span>
+              <span className="userShowInfoTitle">{user.email}</span>
             </div>
-            <div className="userShowInfo">
+            {/* <div className="userShowInfo">
               <LocationSearchingIcon className="userShowIcon" />
               <span className="userShowInfoTitle">New York | USA</span>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="userUpdate">
@@ -62,56 +69,60 @@ export default function User() {
                 <label>Username</label>
                 <input
                   type="text"
-                  placeholder="annabeck99"
+                  value={user.userName}
                   className="userUpdateInput"
+                  readOnly
                 />
               </div>
               <div className="userUpdateItem">
                 <label>Full Name</label>
                 <input
                   type="text"
-                  placeholder="Anna Becker"
+                  value={user.fullName}
                   className="userUpdateInput"
-                />
-              </div>
-              <div className="userUpdateItem">
-                <label>Email</label>
-                <input
-                  type="text"
-                  placeholder="annabeck99@gmail.com"
-                  className="userUpdateInput"
+                  readOnly
                 />
               </div>
               <div className="userUpdateItem">
                 <label>Phone</label>
                 <input
                   type="text"
-                  placeholder="+1 123 456 67"
+                  value={user.mobileNo}
                   className="userUpdateInput"
+                  readOnly
                 />
               </div>
               <div className="userUpdateItem">
-                <label>Address</label>
+                <label>Email</label>
                 <input
                   type="text"
-                  placeholder="New York | USA"
+                  value={user.email}
                   className="userUpdateInput"
+                  readOnly
                 />
+              </div>
+              <div className="userUpdateItem">
+                <label htmlFor="isAdmin">Is Admin</label>
+                <select
+                  name="isAdmin"
+                  value={user.isAdmin ? "true" : "false"}
+                  disabled
+                >
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
               </div>
             </div>
             <div className="userUpdateRight">
               <div className="userUpdateUpload">
                 <img
                   className="userUpdateImg"
-                  src="https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-                  alt=""
+                  src={
+                    user.avatar ||
+                    "https://res.cloudinary.com/arnabcloudinary/image/upload/v1713427478/EazyBuy/Avatar/no-avatar.png"
+                  }
                 />
-                <label htmlFor="file">
-                  <PublishIcon className="userUpdateIcon" />
-                </label>
-                <input type="file" id="file" style={{ display: "none" }} />
               </div>
-              <button className="userUpdateButton">Update</button>
             </div>
           </form>
         </div>
