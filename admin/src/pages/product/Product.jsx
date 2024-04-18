@@ -1,19 +1,28 @@
-import { Link, useLocation } from "react-router-dom";
 import "./product.css";
-import Chart from "../../components/chart/Chart";
+import React, { useState, useEffect, useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import PublishIcon from "@mui/icons-material/Publish";
-import { useSelector } from "react-redux";
-import { useEffect, useMemo, useState } from "react";
 import { userRequest } from "../../requestMethod";
+import Chart from "../../components/chart/Chart";
+import { upadateProduct } from "../../redux/apiCalls";
 
 export default function Product() {
+  const [productImage, setProductImage] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDecription] = useState("");
+  const [price, setPrice] = useState(0);
+  const [categories, setCategories] = useState([]);
+  const [color, setColor] = useState([]);
+  const [size, setSize] = useState([]);
+  const [inStock, setInStock] = useState(true);
   const location = useLocation();
   const productId = location.pathname.split("/")[2];
   const [pStats, setPStats] = useState([]);
-
   const product = useSelector((state) =>
     state.product.products.find((product) => product._id === productId)
   );
+  const dispatch = useDispatch();
 
   const MONTHS = useMemo(
     () => [
@@ -24,7 +33,7 @@ export default function Product() {
       "May",
       "Jun",
       "Jul",
-      "Agu",
+      "Aug",
       "Sep",
       "Oct",
       "Nov",
@@ -36,10 +45,10 @@ export default function Product() {
   useEffect(() => {
     const getStats = async () => {
       try {
-        const res = await userRequest.get("orders/monthly-income?pid=" + productId);
-        const list = res.data.sort((a, b) => {
-          return a._id - b._id;
-        });
+        const res = await userRequest.get(
+          `orders/monthly-income?pid=${productId}`
+        );
+        const list = res.data.data.sort((a, b) => a._id - b._id);
         list.map((item) =>
           setPStats((prev) => [
             ...prev,
@@ -53,12 +62,56 @@ export default function Product() {
     getStats();
   }, [productId, MONTHS]);
 
+  const handleCategories = (e) => {
+    setCategories(e.target.value.split(","));
+  };
+
+  const handleColor = (e) => {
+    setColor(e.target.value.split(","));
+  };
+
+  const handleSize = (e) => {
+    setSize(e.target.value.split(","));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setProductImage(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    if (productImage) formData.append("productImage", productImage);
+    if (title) formData.append("title", title);
+    if (description) formData.append("description", description);
+    if (price) formData.append("price", price);
+    if (categories)
+      categories.forEach((category) =>
+        formData.append("categories[]", category)
+      );
+    if (color) color.forEach((color) => formData.append("color[]", color));
+    if (size) size.forEach((size) => formData.append("size[]", size));
+    if (inStock) formData.append("inStock", inStock === "true" ? true : false);
+
+    await upadateProduct(productId, formData, dispatch);
+  };
+
   return (
     <div className="product">
       <div className="productTitleContainer">
-        <h1 className="productTitle">Product</h1>
-        <Link to="/newproduct">
-          <button className="productAddButton">Create</button>
+        <h1 className="productTitle">Product Details</h1>
+        <Link to="/newproduct" className="link">
+          <button className="productAddButton">Create New Product</button>
         </Link>
       </div>
       <div className="productTop">
@@ -67,20 +120,20 @@ export default function Product() {
         </div>
         <div className="productTopRight">
           <div className="productInfoTop">
-            <img src={product.image} alt="" className="productInfoImg" />
+            <img src={product.image} alt="product" className="productInfoImg" />
             <span className="productName">{product.title}</span>
           </div>
           <div className="productInfoBottom">
             <div className="productInfoItem">
-              <span className="productInfoKey">id:</span>
+              <span className="productInfoKey">ID:</span>
               <span className="productInfoValue">{product._id}</span>
             </div>
             <div className="productInfoItem">
-              <span className="productInfoKey">sales:</span>
+              <span className="productInfoKey">Total Sales:</span>
               <span className="productInfoValue">5123</span>
             </div>
             <div className="productInfoItem">
-              <span className="productInfoKey">in stock:</span>
+              <span className="productInfoKey">In Stock:</span>
               <span className="productInfoValue">{product.inStock}</span>
             </div>
           </div>
@@ -89,27 +142,122 @@ export default function Product() {
       <div className="productBottom">
         <form className="productForm">
           <div className="productFormLeft">
-            <label>Product Name</label>
-            <input type="text" placeholder={product.title} />
-            <label>Product Description</label>
-            <input type="text" placeholder={product.description} />
-            <label>Price</label>
-            <input type="text" placeholder={product.price} />
-            <label>In Stock</label>
-            <select name="inStock" id="idStock">
+            <label htmlFor="productName">Product Name</label>
+            <input
+              type="text"
+              id="productName"
+              defaultValue={product.title}
+              className="inputField"
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <label htmlFor="productDesc">Product Description</label>
+            <input
+              type="text"
+              id="productDesc"
+              defaultValue={product.description}
+              className="inputField"
+              onChange={(e) => setDecription(e.target.value)}
+            />
+            <label htmlFor="productCategories">Categories</label>
+            <input
+              type="text"
+              id="productCategories"
+              defaultValue={product.categories}
+              className="inputField"
+              onChange={handleCategories}
+            />
+            <label htmlFor="productColor">Color</label>
+            <input
+              type="text"
+              id="productColor"
+              defaultValue={product.color}
+              className="inputField"
+              onChange={handleColor}
+            />
+            <label htmlFor="productSize">Size</label>
+            <input
+              type="text"
+              id="productSize"
+              defaultValue={product.size}
+              className="inputField"
+              onChange={handleSize}
+            />
+            <label htmlFor="productPrice">Price</label>
+            <input
+              type="text"
+              id="productPrice"
+              defaultValue={product.price}
+              className="inputField"
+              onChange={(e) => setPrice(e.target.value)}
+            />
+            <label htmlFor="inStock">In Stock</label>
+            <select
+              id="inStock"
+              className="inputField"
+              onChange={(e) => setInStock(e.target.value)}
+            >
               <option value="true">Yes</option>
               <option value="false">No</option>
             </select>
           </div>
           <div className="productFormRight">
-            <div className="productUpload">
-              <img src={product.image} alt="" className="productUploadImg" />
-              <label for="file">
-                <PublishIcon />
-              </label>
-              <input type="file" id="file" style={{ display: "none" }} />
-            </div>
-            <button className="productButton">Update</button>
+            {productImage ? (
+              <>
+                {" "}
+                <img
+                  src={productImage}
+                  alt="Product"
+                  className="productUploadImg"
+                />
+                <label htmlFor="file" className="uploadButton">
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <label htmlFor="productImage" style={{ cursor: "pointer" }}>
+                      Change Image
+                      <PublishIcon />
+                    </label>
+                    <input
+                      id="productImage"
+                      type="file"
+                      style={{ display: "none" }}
+                      onChange={handleImageChange}
+                    />
+                  </div>
+                </label>
+              </>
+            ) : (
+              <>
+                <img
+                  src={product.image}
+                  alt="upload"
+                  className="productUploadImg"
+                />
+                <label htmlFor="file" className="uploadButton">
+                  <div>
+                    <label
+                      htmlFor="productImage"
+                      style={{
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      Change Image
+                      <PublishIcon />
+                    </label>
+                    <input
+                      id="productImage"
+                      type="file"
+                      accept="image/*,video/*"
+                      style={{ display: "none" }}
+                      onChange={handleImageChange}
+                    />
+                  </div>
+                </label>
+              </>
+            )}
+            <button className="productButton" onClick={handleUpdate}>
+              Update Product
+            </button>
           </div>
         </form>
       </div>
