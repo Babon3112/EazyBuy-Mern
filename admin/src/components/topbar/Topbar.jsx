@@ -5,14 +5,14 @@ import LanguageIcon from "@mui/icons-material/Language";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useLocation } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../../frontend/src/redux/apiCalls";
 import { Link } from "react-router-dom";
 
 const Topbar = () => {
   const location = useLocation();
-
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.currentUser.data.user);
 
   const handleLogout = (e) => {
     logout(dispatch);
@@ -37,14 +37,14 @@ const Topbar = () => {
             <div className="topbarIconContainer">
               <SettingsIcon />
             </div>
-            <img
-              src="https://images.pexels.com/photos/1526814/pexels-photo-1526814.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-              alt=""
-              className="topAvatar"
-            />
+            <img src={user.avatar} alt="" className="topAvatar" />
             <Link
               to="/login"
-              style={{ textDecoration: "none", color: "black", fontWeight: "600" }}
+              style={{
+                textDecoration: "none",
+                color: "black",
+                fontWeight: "600",
+              }}
               onClick={handleLogout}
             >
               <div

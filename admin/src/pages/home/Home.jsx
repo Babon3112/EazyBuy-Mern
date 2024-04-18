@@ -12,18 +12,18 @@ export default function Home() {
 
   const MONTHS = useMemo(
     () => [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
+      "January",
+      "February",
+      "March",
+      "April",
       "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ],
     []
   );
@@ -32,7 +32,7 @@ export default function Home() {
     const getStats = async () => {
       try {
         const res = await userRequest.get("/users/stats");
-        const sortedStats = res.data
+        const sortedStats = res.data.data
           .map((item) => ({
             name: MONTHS[item._id - 1],
             "Active User": item.total,
@@ -45,7 +45,6 @@ export default function Home() {
     };
     getStats();
   }, [MONTHS]);
-  
 
   return (
     <div className="home">
