@@ -2,11 +2,24 @@ import mongoose, { Schema } from "mongoose";
 
 const orderSchema = new Schema(
   {
-    userID: { type: String, required: true },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     products: [
       {
-        productId: { type: String },
-        quantity: { type: Number, default: 1 },
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+        },
+        color: { type: String },
+        size: { type: String },
       },
     ],
     amount: { type: Number, required: true },
