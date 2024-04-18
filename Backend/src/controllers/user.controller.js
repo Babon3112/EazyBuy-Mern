@@ -1,5 +1,3 @@
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.util.js";
 import { ApiResponse } from "../utils/ApiResponse.util.js";
@@ -9,6 +7,7 @@ import {
   deleteFromCloudinary,
 } from "../utils/cloudinary.util.js";
 import { CLOUD_AVATAR_FOLDER_NAME } from "../constants.js";
+import { Cart } from "../models/cart.model.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -33,39 +32,33 @@ const registerUser = asyncHandler(async (req, res) => {
   const { fullName, userName, mobileNo, email, password } = req.body;
 
   if (
-    [fullName, userName, mobileNo, email, password].some(
-      (field) => field?.trim() === ""
+    ![fullName, userName, mobileNo, email, password].every(
+      (field) => field && field.trim()
     )
   ) {
-    throw new ApiError(400, "all fields is required");
+    throw new ApiError(400, "All fields are required");
   }
 
   const existedUser = await User.findOne({
     $or: [{ userName }, { mobileNo }, { email }],
   });
-
   if (existedUser) {
     throw new ApiError(
       409,
-      "User with userName or mobile or email already exists"
+      "User with userName, mobile, or email already exists"
     );
   }
 
-  let avatarLocalPath;
-  if (
-    req.files &&
-    Array.isArray(req.files.avatar) &&
-    req.files.avatar.length > 0
-  ) {
-    avatarLocalPath = req.files.avatar[0].path;
-  }
-
+  const avatarLocalPath =
+    req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0
+      ? req.files.avatar[0].path
+      : null;
   const avatar = await uploadOnCloudinary(
     avatarLocalPath,
     CLOUD_AVATAR_FOLDER_NAME
   );
   if (avatarLocalPath && !avatar) {
-    throw new ApiError(500, "Something went wrong while uploading avatar");
+    throw new ApiError(500, "Error uploading avatar");
   }
 
   const user = await User.create({
@@ -77,12 +70,16 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
   });
 
+  const userCart = await Cart.create({ userId: user._id });
+  if (!userCart) {
+    throw new ApiError(500, "Error creating user cart");
+  }
+
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
-
   if (!createdUser) {
-    throw new ApiError(500, "Something went wrong while registering the user");
+    throw new ApiError(500, "Error registering user");
   }
 
   return res
@@ -92,36 +89,28 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, userName, password } = req.body;
-  if (!(email || userName)) {
+  if (!email && !userName) {
     throw new ApiError(400, "userName or email required");
   }
 
-  const user = await User.findOne({
-    $or: [{ userName }, { email }],
-  });
-
+  const user = await User.findOne({ $or: [{ userName }, { email }] });
   if (!user) {
     throw new ApiError(400, "User does not exist");
   }
 
   const isPasswordValid = await user.isPasswordCorrect(password);
-
   if (!isPasswordValid) {
-    throw new ApiError(401, "invalid password");
+    throw new ApiError(401, "Invalid password");
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     user._id
   );
-
   const loggedinUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
+  const options = { httpOnly: true, secure: true };
 
   return res
     .status(200)
@@ -130,53 +119,54 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        {
-          user: loggedinUser,
-          accessToken,
-          refreshToken,
-        },
+        { user: loggedinUser, accessToken, refreshToken },
         "User logged in successfully"
       )
     );
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  User.findByIdAndUpdate(
+  await User.findByIdAndUpdate(
     req.user._id,
-    {
-      $unset: { refreshToken: 1 },
-    },
+    { $unset: { refreshToken: 1 } },
     { new: true }
   );
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
+  const options = { httpOnly: true, secure: true };
 
   return res
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged Out"));
+    .json(new ApiResponse(200, {}, "User logged out"));
 });
 
 const changeUserPassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
-  if (!(currentPassword || newPassword)) {
-    throw new ApiError(400, "currentPassword or newPassword required");
+  if (!currentPassword || !newPassword) {
+    throw new ApiError(
+      400,
+      "Both currentPassword and newPassword are required"
+    );
   }
 
   const user = await User.findById(req.user?._id);
-  const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
 
+  const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
   if (!isPasswordCorrect) {
     throw new ApiError(400, "Invalid current password");
   }
 
   if (currentPassword === newPassword) {
-    throw new ApiError(400, "New password cannot be same as old password");
+    throw new ApiError(
+      400,
+      "New password cannot be the same as the old password"
+    );
   }
+
   user.password = newPassword;
   await user.save({ validateBeforeSave: false });
 
@@ -199,75 +189,62 @@ const getUserDetails = asyncHandler(async (req, res) => {
 
 const updateUserDetails = asyncHandler(async (req, res) => {
   const { fullName, userName, mobileNo, email } = req.body;
-  let toUpdate = {};
-
-  if (fullName) {
-    toUpdate["fullName"] = fullName;
+  const user = await User.findById(req.user?._id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
   }
 
-  const user = await User.findOne(req.user._id);
+  const toUpdate = {};
+  if (fullName) toUpdate.fullName = fullName;
 
-  if (userName) {
-    if (user.userName === userName) {
+  if (userName && userName !== user.userName) {
+    const existingUser = await User.findOne({ userName });
+    if (existingUser) {
       throw new ApiError(400, "This username is already taken");
     }
-    toUpdate["userName"] = userName;
+    toUpdate.userName = userName;
   }
 
-  if (mobileNo) {
-    if (user.mobileNo == mobileNo) {
-      throw new ApiError(400, "This mobile no is already taken");
+  if (mobileNo && mobileNo !== user.mobileNo) {
+    const existingUser = await User.findOne({ mobileNo });
+    if (existingUser) {
+      throw new ApiError(400, "This mobile number is already taken");
     }
-    toUpdate["mobileNo"] = mobileNo;
+    toUpdate.mobileNo = mobileNo;
   }
 
-  if (email) {
-    if (user.email === email) {
+  if (email && email !== user.email) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       throw new ApiError(400, "This email is already taken");
     }
-    toUpdate["email"] = email;
+    toUpdate.email = email;
   }
 
-  let avatarLocalPath;
-  if (
-    req.files &&
-    Array.isArray(req.files.avatar) &&
-    req.files.avatar.length > 0
-  ) {
-    avatarLocalPath = req.files.avatar[0].path;
-  }
-
-  if (avatarLocalPath) {
-    if (user.avatar !== "") {
-      const delSuccess = await deleteFromCloudinary(user.avatar);
-      if (!delSuccess) {
-        throw new ApiError(
-          500,
-          "Something went wrong while deleting previous avatar"
-        );
-      }
+  if (req.files && req.files.avatar && req.files.avatar.length > 0) {
+    const avatarLocalPath = req.files.avatar[0].path;
+    const delSuccess = await deleteFromCloudinary(user.avatar);
+    if (!delSuccess) {
+      throw new ApiError(
+        500,
+        "Something went wrong while deleting previous avatar"
+      );
     }
-  }
-
-  const avatar = avatarLocalPath
-    ? await uploadOnCloudinary(avatarLocalPath, CLOUD_AVATAR_FOLDER_NAME)
-    : null;
-
-  if (avatarLocalPath && !avatar) {
-    throw new ApiError(500, "Something went wrong while uploading avatar");
-  }
-
-  if (avatar) {
-    toUpdate["avatar"] = avatar.url;
+    const avatar = await uploadOnCloudinary(
+      avatarLocalPath,
+      CLOUD_AVATAR_FOLDER_NAME
+    );
+    if (!avatar) {
+      throw new ApiError(500, "Something went wrong while uploading avatar");
+    }
+    toUpdate.avatar = avatar.url;
   }
 
   const updatedUser = await User.findByIdAndUpdate(
     req.user?._id,
-    {
-      $set: { ...toUpdate },
-    },
-    { new: true }
-  ).select("-password -refreshToken");
+    { $set: toUpdate },
+    { new: true, select: "-password -refreshToken" }
+  );
 
   return res
     .status(200)
@@ -279,34 +256,41 @@ const updateUserDetails = asyncHandler(async (req, res) => {
 const deleteUser = asyncHandler(async (req, res) => {
   const { password } = req.body;
   if (!password) {
-    throw new ApiError(400, "password is required");
+    throw new ApiError(400, "Password is required");
   }
+
   const user = await User.findById(req.user?._id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
   const isPasswordCorrect = await user.isPasswordCorrect(password);
   if (!isPasswordCorrect) {
     throw new ApiError(400, "Invalid password");
   }
 
-  if (user.avatar !== "") {
-    const delSuccess = await deleteFromCloudinary(user.avatar);
-    if (!delSuccess) {
-      throw new ApiError(500, "Something went wrong while deleting avatar");
-    }
+  const [cartDelete, userDelete] = await Promise.all([
+    Cart.findOneAndDelete({ userId: user._id }),
+    User.findByIdAndDelete(user._id),
+  ]);
+
+  if (!cartDelete || !userDelete) {
+    throw new ApiError(500, "Error deleting user or cart");
   }
 
-  const userDelete = await User.findByIdAndDelete(user._id);
-  if (!userDelete)
-    throw new ApiError(500, "Something went wrong while deleting the user");
+  if (user.avatar !== "") {
+    deleteFromCloudinary(user.avatar)
+      .then(() => console.log("Avatar deleted successfully"))
+      .catch((err) => console.error("Error deleting avatar:", err));
+  }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "User successfully deleted"));
+  res.status(200).json(new ApiResponse(200, {}, "User successfully deleted"));
 });
 
 const getUserForAdmin = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.userId).select(
-    "-password -refreshToken"
-  );
+  const user = await User.findById(req.params.userId)
+    .select("-password -refreshToken")
+    .lean();
   if (!user) {
     throw new ApiError(404, "User not found");
   }
@@ -317,12 +301,13 @@ const getUserForAdmin = asyncHandler(async (req, res) => {
 });
 
 const getAllUser = asyncHandler(async (req, res) => {
-  const query = req.query.new;
+  const { new: query } = req.query;
 
-  const users = query
-    ? await User.find().sort({ _id: -1 }).limit(5)
-    : await User.find();
-  if (!users) {
+  const users = await (query
+    ? User.find().sort({ _id: -1 }).limit(5)
+    : User.find());
+
+  if (!users.length) {
     throw new ApiError(500, "Error while fetching users");
   }
 
@@ -350,7 +335,7 @@ const getStats = asyncHandler(async (req, res) => {
     },
   ]);
 
-  if (!data) {
+  if (!data.length) {
     throw new ApiError(
       500,
       "Error while fetching user registration statistics"
