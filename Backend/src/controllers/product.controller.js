@@ -12,11 +12,7 @@ const addProduct = asyncHandler(async (req, res) => {
   const { title, description, categories, color, size, price, inStock } =
     req.body;
 
-  if (
-    [title, description, categories, color, price].some(
-      (field) => !field?.trim()
-    )
-  ) {
+  if ([title, description].some((field) => !field?.trim())) {
     throw new ApiError(400, "All fields are required except size");
   }
 
@@ -78,6 +74,29 @@ const updateProduct = async (req, res) => {
   Object.keys(toUpdate).forEach(
     (key) => toUpdate[key] === undefined && delete toUpdate[key]
   );
+
+  const product = await Product.findById(req.params.productId);
+  if (!product) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  const productImageLocalPath = req.files.productImage?.[0]?.path;
+  if (productImageLocalPath) {
+    const delSuccess = await deleteFromCloudinary(product.image);
+    if (!delSuccess) {
+      throw new ApiError(
+        500,
+        "Something went wrong while deleting the previous product image"
+      );
+    }
+    const productImage = await uploadOnCloudinary(
+      productImageLocalPath,
+      CLOUD_PRODUCT_FOLDER_NAME
+    );
+    if (!productImage) {
+      throw new ApiError(500, "Something went wrong uploading product image");
+    }
+  }
 
   const updatedProduct = await Product.findByIdAndUpdate(
     req.params.productId,
