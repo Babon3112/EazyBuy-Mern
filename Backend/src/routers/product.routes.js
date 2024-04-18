@@ -11,6 +11,8 @@ import {
 
 const router = Router();
 
+router.route("/").get(getAllProducts);
+router.route("/:productId").get(getProductById);
 router.route("/add-product").post(
   verifyJWTAndAdmin,
   upload.fields([
@@ -21,11 +23,16 @@ router.route("/add-product").post(
   ]),
   addProduct
 );
-router.route("/").get(getAllProducts);
-router.route("/:productId").get(getProductById);
-router
-  .route("/update-product/:productId")
-  .post(verifyJWTAndAdmin, updateProduct);
+router.route("/update-product/:productId").patch(
+  verifyJWTAndAdmin,
+  upload.fields([
+    {
+      name: "productImage",
+      maxCount: 1,
+    },
+  ]),
+  updateProduct
+);
 router
   .route("/delete-product/:productId")
   .delete(verifyJWTAndAdmin, deleteProduct);
