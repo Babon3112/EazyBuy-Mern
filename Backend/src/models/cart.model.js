@@ -2,11 +2,25 @@ import mongoose, { Schema } from "mongoose";
 
 const cartSchema = new Schema(
   {
-    userID: { type: String, required: true },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     products: [
       {
-        productID: { type: String },
-        quantity: { type: Number, default: 1 },
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+        },
+        color: { type: String },
+        size: { type: String },
+        price: { type: Number, required: true },
       },
     ],
   },
