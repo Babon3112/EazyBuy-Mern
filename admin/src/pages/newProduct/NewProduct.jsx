@@ -29,9 +29,7 @@ export default function NewProduct() {
     setSize(e.target.value.split(","));
   };
 
-  console.log(productImage);
-
-  const handleCreate = (e) => {
+  const handleCreate = async (e) => {
     e.preventDefault();
     if (!productImage) {
       console.error("Please select an image");
@@ -43,12 +41,14 @@ export default function NewProduct() {
     formData.append("title", inputs.title);
     formData.append("description", inputs.description);
     formData.append("price", inputs.price);
-    formData.append("categories", categories);
-    formData.append("color", color);
-    formData.append("size", size);
+    categories.forEach((category) => formData.append("categories[]", category));
+    color.forEach((color) => formData.append("color[]", color));
+    size.forEach((size) => formData.append("size[]", size));
     formData.append("inStock", inputs.inStock === "true" ? true : false);
 
-    createProduct(formData, dispatch);
+    await createProduct(formData, dispatch).then((res) =>
+      window.location.reload()
+    );
   };
 
   return (
@@ -60,6 +60,7 @@ export default function NewProduct() {
           <input
             type="file"
             id="file"
+            accept="image/*,video/*"
             onChange={(e) => setProductImage(e.target.files[0])}
           />
         </div>
