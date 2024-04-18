@@ -83,10 +83,12 @@ const signIn = () => {
   const { isFetching, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    login(dispatch, { email, password });
+    await login(dispatch, { email, password }).then(() =>
+      window.location.reload()
+    );
   };
 
   return (

@@ -10,7 +10,7 @@ export default function WidgetSm() {
     const getUsers = async () => {
       try {
         const res = await userRequest.get("users/?new=true");
-        setUsers(res.data);
+        setUsers(res.data.data);
       } catch (error) {}
     };
     getUsers();
@@ -22,7 +22,7 @@ export default function WidgetSm() {
       <ul className="widgetSmList">
         {users.map((user) => (
           <li className="widgetSmListItem" key={user._id}>
-            <img src={user.avatar} className="widgetSmImg" />
+            <img src={user.avatar ||"https://res.cloudinary.com/arnabcloudinary/image/upload/v1713427478/EazyBuy/Avatar/no-avatar.png"} className="widgetSmImg" />
             <div className="widgetSmUser">
               <span className="widgetSmUsername">{user.fullName}</span>
             </div>
